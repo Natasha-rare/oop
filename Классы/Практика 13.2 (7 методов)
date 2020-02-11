@@ -1,0 +1,117 @@
+using System;
+
+namespace Классы
+{
+    class Point3D
+    {
+        private double x;
+        private double y;
+        private double z;
+
+        public Point3D()
+        {
+            
+        }
+
+        public Point3D(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public void Print_Point()
+        {
+            Console.WriteLine("Координаты точки: x={0} y={1} z={2}", x, y, z);
+        }
+
+        public void Move_Point(string move, double len)
+        {
+            switch (move)
+            {
+                case "x":
+                    x += len;
+                    break;
+                case "y":
+                    y += len;
+                    break;
+                case "z":
+                    z += len;
+                    break;
+            }
+        }
+
+        public double Len_Vec()
+        {            
+            return Math.Sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        }
+        
+        public void Sum(Point3D obj)
+        {
+            this.x += obj.x;
+            this.y += obj.y;
+            this.z += obj.z;
+        }
+
+    }
+    class Program
+    {
+        static Point3D Create_Point()
+        {
+            Console.WriteLine("Вы хотите самостоятельно ввести координаты объекта (1)\nили создать объект по умолчанию (2)?");
+            byte answer;
+            // Просим выбрать конструктор объекта
+            do
+            {
+                Console.WriteLine("Введите выбранный вариант (1 или 2)");
+                answer = byte.Parse(Console.ReadLine());
+            }
+            while (answer != 1 && answer != 2);
+
+            if (answer == 1)
+            { 
+                    // Вводим координаты точки
+                    Console.WriteLine("Введите координату точки");
+
+                    Console.Write("x=");
+                    double x = double.Parse(Console.ReadLine());
+
+                    Console.Write("y=");
+                    double y = double.Parse(Console.ReadLine());
+
+                    Console.Write("z=");
+                    double z = double.Parse(Console.ReadLine());
+                    return new Point3D(x, y, z);
+            }
+            return new Point3D();
+        }
+        static void Main(string[] args)
+        {
+            Point3D new_point = Create_Point();
+            // Вывод точки
+            new_point.Print_Point();
+            string move;
+
+            // Двигаем точку
+            do
+            {
+                Console.Write("Введите ось координат (x, y или z) ");
+                move = Console.ReadLine();
+            }
+            while (move != "x" && move != "y" && move != "z");
+            Console.Write("Введите расстояние ");
+            double len = double.Parse(Console.ReadLine());
+            new_point.Move_Point(move, len);
+
+            new_point.Print_Point();
+            double r = new_point.Len_Vec();
+            Console.WriteLine("Длина радиус-вектора {0}", r);
+
+            Console.WriteLine("\nСоздаем новую точку\n");
+            Point3D new_point_2 = Create_Point();
+            new_point.Sum(new_point_2);
+            Console.WriteLine("После сложения точек координаты большей равны");
+            new_point.Print_Point();
+        }
+    }
+}
