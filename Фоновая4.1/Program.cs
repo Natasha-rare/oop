@@ -14,7 +14,6 @@ namespace Фоновая_4
         private int x;
         private int y;
 
-        // Конструктор по умолчанию
         public Parallelepiped()
         {
             sh = 6;
@@ -23,7 +22,6 @@ namespace Фоновая_4
             x = y = 0;
         }
 
-        // Конструктор с пользовательскими величинами
         public Parallelepiped(int sh, int g, int h, int x, int y)
         {
             this.sh = sh;
@@ -33,6 +31,14 @@ namespace Фоновая_4
             this.y = y;
         }
 
+        //public Parallelepiped(int sh, int g, int h, int x, int y)
+        //{
+        //    this.sh = sh;
+        //    this.g = g;
+        //    this.h = h;
+        //    this.x = x;
+        //    this.y = y;
+        //}
         //Вывод длин сторон
         public void Print()
         {
@@ -40,58 +46,181 @@ namespace Фоновая_4
         }
 
         // Объем
-        public int Volume()
+        public int Volume
         {
-            return sh * g * h;
+            get
+            {
+                return sh * g * h;
+            }
+
         }
+        public double Diagonal
+        {
+            get
+            {
+                return Math.Sqrt(g * g + sh * sh + h * h);
+            }
+        }
+
 
         // Площадь поверхности
-        public int Area()
+        public int Full_Area
         {
-            return 2 * (sh * h + h * g + g * sh);
+            get
+            {
+                return 2 * (sh * h + h * g + g * sh);
+            }
+
         }
 
-        // Получаем значения закрытых полей
-        public int Get_Sh() //ширина
+        public int Perimetr
         {
-            return sh;
+            get
+            {
+                return 4 * (sh + h + g);
+            }
         }
 
-        public int Get_H() //высота
+        public int Bottom_Area
         {
-            return h;
+            get
+            {
+                return sh * g;
+            }
         }
 
-        public int Get_G() // глубина
+        public int Front_Area
         {
-            return g;
+            get
+            {
+                return sh * h;
+            }
         }
 
-        public int Get_X() // точка вставки - х
+        public int Side_Area
         {
-            return x;
+            get
+            {
+                return sh * h;
+            }
         }
 
-        public int Get_Y() // точка вставки - у
+
+        public int Sh
         {
-            return y;
+            get
+            {
+                return sh;
+            }
+            set
+            {
+                try
+                {
+                    if (value > 0) sh = value;
+                    else throw new Exception("Ширина должна быть положительной");
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Ошибка: {0}", error.Message);
+                }
+            }
         }
 
-        // Двигаем фигуру
+        public int H
+        {
+            get
+            {
+                return sh;
+            }
+            set
+            {
+                try
+                {
+                    if (value > 0) h = value;
+                    else throw new Exception("Высота должна быть положительной");
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Ошибка: {0}", error.Message);
+                }
+            }
+        }
+
+        public double Radius
+        {
+            get
+            {
+                if (h == sh && sh == g && g == h) return Math.Sqrt(g * g + sh * sh + h * h) / 2;
+                return -1;
+            }
+        }
+
+        public int G
+        {
+            get
+            {
+                return g;
+            }
+            set
+            {
+                try
+                {
+                    if (value > 0) g = value;
+                    else throw new Exception("Глубина должна быть положительной");
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Ошибка: {0}", error.Message);
+                }
+            }
+        }
+
+        public int X
+        {
+            get
+            {
+                return x;
+            }
+            
+        }
+
+        public int Y
+        {
+            get
+            {
+                return y;
+            }
+        }
+
+        public int Cube
+        {
+            get
+            {
+                if (h == sh && sh == g && g == h) return 1;
+                else return 0;
+            }
+        }
+
+
         public void Move(int x, int y)
         {
             this.x += x;
             this.y += y;
         }
 
-        // Изменение размеров
         public void Resize(int side, int value)
         {
-            if (side == 2) g += value;
-            else sh += value;
+            switch (side)
+            {
+                case 1:
+                    sh += value;
+                    break;
+                case 2:
+                    g += value;
+                    break;
+            }
         }
 
-        // Функция, которая ищет пересечение
         public Parallelepiped Cross(Parallelepiped obj)
         {
             int left = Math.Max(this.x, obj.x);
@@ -100,7 +229,7 @@ namespace Фоновая_4
             int bottom = Math.Max(this.y, obj.y);
             int g = right - left;
             int width = top - bottom;
-            return new Parallelepiped(width, g, h, left, bottom);
+            return new Parallelepiped(width, g, this.h, left, bottom);
         }
     }
     class Program
@@ -108,81 +237,139 @@ namespace Фоновая_4
 
         static Parallelepiped Create_Figure()
         {
-            Console.WriteLine("Вы хотите самостоятельно ввести длины сторон параллепипеда " +
-                "(1)\nили создать фигуру по умолчанию (2)?");
+            Console.WriteLine("Вы хотите самостоятельно ввести длины сторон параллепипеда (1)\nили создать фигуру по умолчанию (2)?");
             int answer;
+            string s;
             // Просим выбрать конструктор объекта
             do
             {
                 Console.WriteLine("Введите выбранный вариант (1 или 2)");
-                answer = int.Parse(Console.ReadLine());
-                if (answer == 543210) Environment.Exit(0);
+                s = Console.ReadLine();
+                if (s == "543210") Environment.Exit(0);
             }
-            while (answer != 1 && answer != 2);
-
+            while (!int.TryParse(s, out answer) || (answer != 1 && answer != 2));
+            Console.WriteLine("answer= {0}", answer);
+            int sh, h, g, x, y;
             if (answer == 1)
             {
-                // Вводим координаты точки
-
+                //Вводим координаты точки
                 Console.WriteLine("Введите длины сторон параллелипипеда");
 
-                Console.Write("ширина=");
-                int sh = int.Parse(Console.ReadLine());
+                //Console.WriteLine("Введите длины сторон прямоугольника");
+                do
+                {
+                    Console.Write("ширина=");
+                    s = Console.ReadLine();
+                    if (s == "543210") Environment.Exit(0);
+                }
+                while (!int.TryParse(s, out sh));
 
-                //Завершение работы
-                if (sh == 543210) Environment.Exit(0);
+                do
+                {
+                    Console.Write("глубина=");
+                    s = Console.ReadLine();
+                    if (s == "543210") Environment.Exit(0);
+                }
+                while (!int.TryParse(s, out g));
 
-                Console.Write("длина=");
-                int g = int.Parse(Console.ReadLine());
+                do
+                {
+                    Console.Write("высота=");
+                    s = Console.ReadLine();
+                    if (s == "543210") Environment.Exit(0);
+                }
+                while (!int.TryParse(s, out h));
 
-                Console.Write("высота=");
-                int h = int.Parse(Console.ReadLine());
+                do
+                {
+                    Console.Write("Точка вставки(x)=");
+                    s = Console.ReadLine();
+                    if (s == "543210") Environment.Exit(0);
+                }
+                while (!int.TryParse(s, out x));
 
-                Console.Write("Точка вставки(x)=");
-                int x = int.Parse(Console.ReadLine());
+                do
+                {
+                    Console.Write("Точка вставки(y)=");
+                    s = Console.ReadLine();
+                    if (s == "543210") Environment.Exit(0);
+                }
+                while (!int.TryParse(s, out y));
 
-                Console.Write("Точка вставки(y)=");
-                int y = int.Parse(Console.ReadLine());
-                
                 return new Parallelepiped(sh, g, h, x, y);
             }
             return new Parallelepiped();
         }
 
-        // Проверка пересечения
         static void Peresek(Parallelepiped figure, Parallelepiped figure_2)
         {
             Parallelepiped new_f = figure.Cross(figure_2);
             new_f.Print();
-            if (new_f.Get_G() <= 0 || new_f.Get_Sh() <= 0) // Если отрицательные значения => не переесеаются
-                Console.WriteLine("Фигуры не пересекаются"); 
+            if (new_f.G <= 0 || new_f.Sh <= 0) // Если отрицательные значения => не переесеаются
+                Console.WriteLine("Фигуры не пересекаются");
             else
-                Console.WriteLine("Пересечиние: g={0} sh={1}", new_f.Get_G(), new_f.Get_Sh());
+                Console.WriteLine("Пересечиние: g={0} sh={1}", new_f.G, new_f.Sh);
         }
-
         static void Main(string[] args)
         {
-            Parallelepiped figure = Create_Figure(); // Создание
-            figure.Print(); // Вывод фигуры
-            Console.WriteLine("Объем = {0}", figure.Volume());
-            Console.WriteLine("Площадь поверхности = {0}", figure.Area());
-            Console.WriteLine("Ширина={0}", figure.Get_Sh());
-            Console.WriteLine("Высота={0}", figure.Get_H());
-            Console.WriteLine("Длина(глубина)={0}", figure.Get_G());
+            string s;
+            int value;
+            Parallelepiped figure = Create_Figure();
+            figure.Print();
+            Console.WriteLine("Объем = {0}", figure.Volume);
+            Console.WriteLine("Площадь поверхности = {0}", figure.Full_Area);
+            Console.WriteLine("Диагональ равна {0:n2}", figure.Diagonal);
+            Console.WriteLine("Периметр равен {0}", figure.Perimetr);
+            if (figure.Radius == -1) Console.WriteLine("Вокруг фигуры нельзя описать шар");
+            else Console.WriteLine("Радиус описанного круга равен {0}", figure.Radius);
+            //Console.WriteLine("Ширина={0}", figure.Sh);
+            //Console.WriteLine("Высота={0}", figure.H);
+            //Console.WriteLine("Длина(глубина)={0}", figure.G);
+
+            if (figure.Cube == 1) Console.WriteLine("Это куб");
+            else Console.WriteLine("Это не куб");
+
+            do
+            {
+                Console.Write("Новая ширина=");
+                s = Console.ReadLine();
+                if (s == "543210") Environment.Exit(0);
+            }
+            while (!int.TryParse(s, out value));
+            figure.Sh = value;
+
+            do
+            {
+                Console.Write("Новая глубина=");
+                s = Console.ReadLine();
+                if (s == "543210") Environment.Exit(0);
+            }
+            while (!int.TryParse(s, out value));
+            figure.G = value;
+
+            do
+            {
+                Console.Write("Новая высота=");
+                s = Console.ReadLine();
+                if (s == "543210") Environment.Exit(0);
+            }
+            while (!int.TryParse(s, out value));
+            figure.H = value;
 
             int answer;
             do
             {
-                
                 Console.WriteLine("Введите сторону, которую вы хотите изменить (ширина (1) или глубина (2))");
-                answer = int.Parse(Console.ReadLine());
-                if (answer == 543210) Environment.Exit(0);
+                s = Console.ReadLine();
             }
-            while (answer != 1 && answer != 2);
+            while (!int.TryParse(s, out answer) || (answer != 1 && answer != 2));
 
-            int value;
-            Console.WriteLine("Введите величину, на которую вы хотите изменить прямоугольник");
-            value = int.Parse(Console.ReadLine());
+            do
+            {
+                Console.WriteLine("Введите величину, на которую вы хотите изменить прямоугольник");
+                s = Console.ReadLine();
+            }
+            while (!int.TryParse(s, out value));
             //Завершение работы
             if (value == 543210) Environment.Exit(0);
             figure.Resize(answer, value);
@@ -192,8 +379,7 @@ namespace Фоновая_4
                 Peresek(figure, figure_2);
             }
             
-            //figure_2.Print();
-            
+
         }
     }
 }
