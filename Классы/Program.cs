@@ -10,7 +10,22 @@ namespace Классы
 
         public Point3D()
         {
+            x = y = z = 5;
+        }
 
+        public static Point3D Create(int x, int y, int z)
+        {
+            try
+            {
+                if (x % 5 != 0 && y % 5 != 0 && z % 5 != 0)
+                    throw new Exception("Ни одна из координат не кратна 5. Создается объект с координатами (5, 5, 5)");
+                return new Point3D(x, y, z);
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine("Ошибка: {0}", error.Message);
+                return new Point3D();
+            }
         }
 
         public Point3D(int x, int y, int z)
@@ -162,7 +177,7 @@ namespace Классы
                 answer = byte.Parse(Console.ReadLine());
             }
             while (answer != 1 && answer != 2);
-            int x, y, z;
+            int x = 0, y = 0, z = 0;
             string s;
             if (answer == 1)
             {
@@ -186,20 +201,8 @@ namespace Классы
                     Console.Write("z=");
                     s = Console.ReadLine();
                 } while (!int.TryParse(s, out z));
-
-                try
-                {
-                    if (x % 5 != 0 && y % 5 != 0 && z % 5 != 0) throw new Exception("Ни одна из координат не кратна 5. Создается объект с координатами (5, 5, 5)");
-                    else return new Point3D(x, y, z);
-                }
-                catch (Exception error)
-                {
-                    Console.WriteLine("Ошибка: {0}", error.Message);
-                    return new Point3D(5, 5, 5);
-                }
-
             }
-            return new Point3D();
+            return Point3D.Create(x, y, z);
         }
         static void Main(string[] args)
         {
