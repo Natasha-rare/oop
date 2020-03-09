@@ -28,7 +28,7 @@ namespace Классы
             }
         }
 
-        public Point3D(int x, int y, int z)
+        private Point3D(int x, int y, int z)
         {
             this.x = x;
             this.y = y;
@@ -201,8 +201,9 @@ namespace Классы
                     Console.Write("z=");
                     s = Console.ReadLine();
                 } while (!int.TryParse(s, out z));
+                return Point3D.Create(x, y, z);
             }
-            return Point3D.Create(x, y, z);
+            return new Point3D();
         }
         static void Main(string[] args)
         {

@@ -22,7 +22,7 @@ namespace Фоновая_4
             x = y = 0;
         }
 
-        public Parallelepiped(int sh, int g, int h, int x, int y)
+        private Parallelepiped(int sh, int g, int h, int x, int y)
         {
             this.sh = sh;
             this.g = g;
@@ -31,14 +31,21 @@ namespace Фоновая_4
             this.y = y;
         }
 
-        //public Parallelepiped(int sh, int g, int h, int x, int y)
-        //{
-        //    this.sh = sh;
-        //    this.g = g;
-        //    this.h = h;
-        //    this.x = x;
-        //    this.y = y;
-        //}
+        public static Parallelepiped Create(int sh, int g, int h, int x, int y)
+        {
+            try
+            {
+                if (sh < 0 || g < 0 || h < 0)
+                    throw new Exception("Длины сторон должна быть положительными. Создается объект по умолчанию");
+                return new Parallelepiped(sh, g, h, x, y);
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine("Ошибка: {0}", error.Message);
+                return new Parallelepiped();
+            }
+        }
+
         //Вывод длин сторон
         public void Print()
         {
@@ -197,7 +204,7 @@ namespace Фоновая_4
             get
             {
                 if (h == sh && sh == g && g == h) return 1;
-                else return 0;
+                return 0;
             }
         }
 
@@ -295,9 +302,9 @@ namespace Фоновая_4
                     if (s == "543210") Environment.Exit(0);
                 }
                 while (!int.TryParse(s, out y));
-
-                return new Parallelepiped(sh, g, h, x, y);
+                return Parallelepiped.Create(sh, g, h, x, y);
             }
+
             return new Parallelepiped();
         }
 
