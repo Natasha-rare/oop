@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Фоновая_4._2
 {
+
     enum Month
     {
         January = 1, February, March, April, May, June, July,
@@ -119,6 +120,32 @@ namespace Фоновая_4._2
             return delta;
         }
 
+        public int MaxDelta(out int day, out int temp)
+        {
+            int delta = -100;
+            day = temp = 0;
+            for (int i = 0; i < temperature.GetLength(0); i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    if (Math.Abs(temperature[i, j] - temperature[i, j + 1]) > delta)
+                    {
+                        delta = Math.Abs(temperature[i, j] - temperature[i, j + 1]);
+                        temp = temperature[i, j];
+                        day = (i + 1) * 7 + j + 2 - this.day;
+                    }
+                        
+                }
+                if (i != temperature.GetLength(0) - 1)
+                    if (Math.Abs(temperature[i, 6] - temperature[i + 1, 0]) > delta)
+                    {
+                        delta = Math.Abs(temperature[i, 6] - temperature[i + 1, 0]);
+                        temp = temperature[i, 6];
+                        day = (i + 1) * 7 + 8 - this.day;
+                    }
+            }
+            return delta;
+        }
     }
 
     class Program
@@ -161,9 +188,12 @@ namespace Фоновая_4._2
         }
         static void Main(string[] args)
         {
+            
             MatrixWeather a = Create();
             a.Print();
-            Console.WriteLine("Максимальна дельта температур равна {0}", a.MaxDelta());
+            int d, t;
+            Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
+температура {1}-го числа составляла {3} градуса(-ов) ", a.MaxDelta(out d, out t), d, d + 1, t);
         }
     }
 }
