@@ -146,6 +146,67 @@ namespace Фоновая_4._2
             }
             return delta;
         }
+
+        public int Day
+        {
+            get
+            {
+                return day;
+            }
+
+            set
+            {
+                try
+                {
+                    if (value < 0 || value > 7) throw new Exception("Вы ввели неправильный день недели. Ничего не изменяется");
+                    day = value;
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Ошибка: {0}", error.Message);
+                }
+            }
+        }
+
+        public int Month
+        {
+            get
+            {
+                return month;
+            }
+
+            set
+            {
+                try
+                {
+                    if (value < 0 || value > 12) throw new Exception("Вы ввели неправильный месяц. Ничего не изменяется");
+                    month = value;
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Ошибка: {0}", error.Message);
+                }
+            }
+        }
+
+        public int [, ] Temperature
+        {
+            get
+            {
+                return temperature;
+            }
+        }
+
+        public int Zero_Temp
+        {
+            get
+            {
+                for (int i = 0; i < temperature.GetLength(0); i++)
+                   for (int j = 0; j < 7; j++)
+            }
+        }
+        
+
     }
 
     class Program
@@ -194,6 +255,9 @@ namespace Фоновая_4._2
             int d, t;
             Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
 температура {1}-го числа составляла {3} градуса(-ов) ", a.MaxDelta(out d, out t), d, d + 1, t);
+            a.Day = 9;
+            a.Day = 3;
+            a.Print();
         }
     }
 }
