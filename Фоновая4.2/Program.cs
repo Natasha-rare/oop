@@ -189,6 +189,11 @@ namespace Фоновая_4._2
             }
         }
 
+        public int Count_Days
+        {
+            get { return days[month - 1]; }
+        }
+
         public int [, ] Temperature
         {
             get
@@ -201,11 +206,24 @@ namespace Фоновая_4._2
         {
             get
             {
+                int count = 0;
                 for (int i = 0; i < temperature.GetLength(0); i++)
-                   for (int j = 0; j < 7; j++)
+                    for (int j = 0; j < 7; j++)
+                        if (temperature[i, j] == 0) count++;
+                return count;
             }
         }
-        
+
+        public static int NoData
+        {
+            get
+            {
+                //for (int i = 0; i < temperature.GetLength(0); i++)
+                //    for (int j = 0; j < 7; j++)
+                //        if (temperature[i, j] < 0) temperature = 0;
+                return -1000;
+            }
+        }
 
     }
 
@@ -255,9 +273,7 @@ namespace Фоновая_4._2
             int d, t;
             Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
 температура {1}-го числа составляла {3} градуса(-ов) ", a.MaxDelta(out d, out t), d, d + 1, t);
-            a.Day = 9;
-            a.Day = 3;
-            a.Print();
+            Console.WriteLine(a.Count_Days);
         }
     }
 }
