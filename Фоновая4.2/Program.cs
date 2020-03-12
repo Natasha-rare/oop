@@ -57,7 +57,7 @@ namespace Фоновая_4._2
         {
             try
             {
-                if (!(day > 0 && month > 0 && day < 31 && month <= 12))
+                if (!(day > 0 && month > 0 && day <= 7 && month <= 12))
                     throw new Exception("Такой даты не существует. Устанавливается дата 01.01");
                 return new MatrixWeather(day, month);
             }
@@ -101,6 +101,24 @@ namespace Фоновая_4._2
             }
         }
 
+        public int MaxDelta()
+        {
+            int delta = -100;
+            for (int i = 0; i < temperature.GetLength(0); i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    if (Math.Abs(temperature[i, j] - temperature[i, j + 1]) > delta)
+                        delta = Math.Abs(temperature[i, j] - temperature[i, j + 1]);
+                }
+                if (i != temperature.GetLength(0) - 1)
+                    if(Math.Abs(temperature[i, 6] - temperature[i + 1, 0]) > delta)
+                        delta = Math.Abs(temperature[i, 6] - temperature[i + 1, 0]);
+        }
+                
+            return delta;
+        }
+
     }
 
     class Program
@@ -120,14 +138,7 @@ namespace Фоновая_4._2
             string s;
             if (answer == 1)
             {
-                // Вводим координаты точки
-                Console.WriteLine("Введите день");
-
-                do
-                {
-                    Console.Write("day=");
-                    s = Console.ReadLine();
-                } while (!int.TryParse(s, out day));
+                // Вводим дату
 
                 Console.WriteLine("Введите месяц");
                 do
@@ -135,7 +146,16 @@ namespace Фоновая_4._2
                     Console.Write("month=");
                     s = Console.ReadLine();
                 } while (!int.TryParse(s, out month));
+
+                Console.WriteLine("Введите день недели");
+
+                do
+                {
+                    Console.Write("day=");
+                    s = Console.ReadLine();
+                } while (!int.TryParse(s, out day));
                 return MatrixWeather.Create(day, month);
+
             }
             return new MatrixWeather();
         }
@@ -143,6 +163,7 @@ namespace Фоновая_4._2
         {
             MatrixWeather a = Create();
             a.Print();
+            Console.WriteLine("Максимальна дельта температур равна {0}", a.MaxDelta());
         }
     }
 }
