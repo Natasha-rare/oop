@@ -23,14 +23,14 @@ namespace Фоновая_4._2
         public MatrixWeather()
         {
             month = day = 1;
-            temperature = FillArray(days[month], month);
+            temperature = FillArray(days[month - 1], month);
         }
 
         private static int[,] FillArray(int n, int m)
         {
-            int[,] temperature = new int[n / 7, 7];
+            int[,] temperature = new int[n / 7 + 1, 7];
             Random rnd = new Random();
-            for (int i = 0; i < (int)n / 7; i++)
+            for (int i = 0; i <= (int)n / 7; i++)
             {
                 for (int j = 0; j < 7; j++)
                 {
@@ -71,21 +71,30 @@ namespace Фоновая_4._2
 
         public void Print()
         {
+            //Console.ForegroundColor = ConsoleColor.Black;
+            //for (int i = 0; i < temperature.GetLength(0); i++)
+            //{
+            //    for (int j = 0; j < 7; j++)
+            //    {
+            //        Console.Write(temperature[i, j] + " ");
+            //    }
+            //    Console.WriteLine();
+            //}
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Пн\tВт\tСр\tЧт\tПт\tСб\tВс");
             for (int i = 0; i < day - 1; i++) Console.Write("\t");
             int n = 1;
-            for (int i = 0; i <= 7 - day; i++)
+            for (int i = day - 1; i < 7; i++)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write("{0} ", n);
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("{0}\t", temperature[0, i]);
-
                 n++;
             }
             Console.WriteLine();
-            for (int j = 0; j < days[month - 1] / 7; j++)
+            for (int j = 1; j <= days[month - 1] / 7; j++)
             {
                 for (int k = 0; k < 7; k++)
                 {
@@ -132,17 +141,17 @@ namespace Фоновая_4._2
                     {
                         delta = Math.Abs(temperature[i, j] - temperature[i, j + 1]);
                         temp = temperature[i, j];
-                        day = (i + 1) * 7 + j + 2 - this.day;
+                        day = i * 7 + j + 2 - this.day;
                     }
                         
                 }
-                if (i != temperature.GetLength(0) - 1)
-                    if (Math.Abs(temperature[i, 6] - temperature[i + 1, 0]) > delta)
-                    {
-                        delta = Math.Abs(temperature[i, 6] - temperature[i + 1, 0]);
-                        temp = temperature[i, 6];
-                        day = (i + 1) * 7 + 8 - this.day;
-                    }
+                //if (i != temperature.GetLength(0) - 1)
+                //    if (Math.Abs(temperature[i, 6] - temperature[i + 1, 0]) > delta)
+                //    {
+                //        delta = Math.Abs(temperature[i, 6] - temperature[i + 1, 0]);
+                //        temp = temperature[i, 6];
+                //        day = (i) * 7 + 8 - this.day;
+                //    }
             }
             return delta;
         }
@@ -159,13 +168,60 @@ namespace Фоновая_4._2
                 try
                 {
                     if (value < 0 || value > 7) throw new Exception("Вы ввели неправильный день недели. Ничего не изменяется");
-                    day = value;
-                }
+                    int[] mas = new int[temperature.Length];
+                    int k = 0, temp = 0;
+                    for (int i = 0; i < temperature.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < 7; j++)
+                        {
+                            mas[k] = temperature[i, j];
+                            k++;
+                        }
+                    }
+                    
+                    if (value > day)
+                    {
+                        k = value - day;
+                        day = value;
+                        while (k > 0)
+                        {
+                            temp = mas[mas.Length - 1];
+                            for (int i = mas.Length - 2; i >= 0; i--)
+                                mas[i + 1] = mas[i];
+                            mas[0] = temp;
+                            k--;
+                        }
+
+                    }
+                    else
+                    {
+                        k = day - value;
+                        day = value;
+                        while (k > 0)
+                        {
+                            temp = mas[0];
+                            for (int i = 1; i < mas.Length; i++)
+                                mas[i - 1] = mas[i];
+                            mas[mas.Length - 1] = temp;
+                            k--;
+                        }
+                    
+                    }
+                    for (int i = 0; i < temperature.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < 7; j++)
+                        {
+                            temperature[i, j] = mas[k];
+                            k++;
+                        }
+                    }
+
+            }
                 catch (Exception error)
                 {
                     Console.WriteLine("Ошибка: {0}", error.Message);
                 }
-            }
+}
         }
 
         public int Month
@@ -200,6 +256,23 @@ namespace Фоновая_4._2
             {
                 return temperature;
             }
+            set
+            {
+                for (int i = 0; i < temperature.GetLength(0); i++)
+                    for (int j = 0; j < 7; j++)
+                    {
+                        try
+                        {
+                            temperature[i, j] = value[i, j];
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            temperature[i, j] = NoData;
+                        }
+                    }
+                
+                    
+            }
         }
 
         public int Zero_Temp
@@ -218,10 +291,7 @@ namespace Фоновая_4._2
         {
             get
             {
-                //for (int i = 0; i < temperature.GetLength(0); i++)
-                //    for (int j = 0; j < 7; j++)
-                //        if (temperature[i, j] < 0) temperature = 0;
-                return -1000;
+                return -100;
             }
         }
 
@@ -271,9 +341,14 @@ namespace Фоновая_4._2
             MatrixWeather a = Create();
             a.Print();
             int d, t;
+            //int[,] value = { { 1, 2, 3, 4, 4, 6 }, { 4, 6, 5 , 1, -10, -1} };
+            //a.Temperature = value;
+            a.Print();
             Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
 температура {1}-го числа составляла {3} градуса(-ов) ", a.MaxDelta(out d, out t), d, d + 1, t);
             Console.WriteLine(a.Count_Days);
+            a.Day = 3;
+            a.Print();
         }
     }
 }
