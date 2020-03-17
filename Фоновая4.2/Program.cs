@@ -71,15 +71,6 @@ namespace Фоновая_4._2
 
         public void Print()
         {
-            //Console.ForegroundColor = ConsoleColor.Black;
-            //for (int i = 0; i < temperature.GetLength(0); i++)
-            //{
-            //    for (int j = 0; j < 7; j++)
-            //    {
-            //        Console.Write(temperature[i, j] + " ");
-            //    }
-            //    Console.WriteLine();
-            //}
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Пн\tВт\tСр\tЧт\tПт\tСб\tВс");
@@ -93,6 +84,7 @@ namespace Фоновая_4._2
                 Console.Write("{0}\t", temperature[0, i]);
                 n++;
             }
+
             Console.WriteLine();
             for (int j = 1; j <= days[month - 1] / 7; j++)
             {
@@ -121,9 +113,6 @@ namespace Фоновая_4._2
                     if (Math.Abs(temperature[i, j] - temperature[i, j + 1]) > delta)
                         delta = Math.Abs(temperature[i, j] - temperature[i, j + 1]);
                 }
-                if (i != temperature.GetLength(0) - 1)
-                    if(Math.Abs(temperature[i, 6] - temperature[i + 1, 0]) > delta)
-                        delta = Math.Abs(temperature[i, 6] - temperature[i + 1, 0]);
         }
                 
             return delta;
@@ -132,12 +121,13 @@ namespace Фоновая_4._2
         public int MaxDelta(out int day, out int temp)
         {
             int delta = -100;
-            day = temp = 0;
+            day = temp = 1;
             for (int i = 0; i < temperature.GetLength(0); i++)
             {
                 for (int j = 0; j < 6; j++)
                 {
-                    if (Math.Abs(temperature[i, j] - temperature[i, j + 1]) > delta)
+                    if (Math.Abs(temperature[i, j] - temperature[i, j + 1]) > delta &&
+                        temperature[i, j + 1] != -100 && temperature[i, j] != -100)
                     {
                         delta = Math.Abs(temperature[i, j] - temperature[i, j + 1]);
                         temp = temperature[i, j];
@@ -145,13 +135,6 @@ namespace Фоновая_4._2
                     }
                         
                 }
-                //if (i != temperature.GetLength(0) - 1)
-                //    if (Math.Abs(temperature[i, 6] - temperature[i + 1, 0]) > delta)
-                //    {
-                //        delta = Math.Abs(temperature[i, 6] - temperature[i + 1, 0]);
-                //        temp = temperature[i, 6];
-                //        day = (i) * 7 + 8 - this.day;
-                //    }
             }
             return delta;
         }
@@ -237,6 +220,7 @@ namespace Фоновая_4._2
                 {
                     if (value < 0 || value > 12) throw new Exception("Вы ввели неправильный месяц. Ничего не изменяется");
                     month = value;
+                    temperature = FillArray(days[month - 1], month);
                 }
                 catch (Exception error)
                 {
@@ -337,18 +321,83 @@ namespace Фоновая_4._2
         }
         static void Main(string[] args)
         {
-            
-            MatrixWeather a = Create();
-            a.Print();
-            int d, t;
-            //int[,] value = { { 1, 2, 3, 4, 4, 6 }, { 4, 6, 5 , 1, -10, -1} };
-            //a.Temperature = value;
-            a.Print();
-            Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
-температура {1}-го числа составляла {3} градуса(-ов) ", a.MaxDelta(out d, out t), d, d + 1, t);
-            Console.WriteLine(a.Count_Days);
-            a.Day = 3;
-            a.Print();
+            MatrixWeather weather = new MatrixWeather();
+            Month m;
+            while (true)
+            {
+                int answer = -1;
+                Console.WriteLine(@"Что вы хотите сделать?
+1 - Создать объект
+2 - Вывести температурные показатели
+3 - Вывести месяц
+4 - Вывести день (с которого начинается месяц)
+5 - задать новый месяц
+6 - задать новый день недели
+7 - Задать массив температур
+8 - Найти максимальную дельту температур
+9 - Выйти из программы");
+                answer = int.Parse(Console.ReadLine());
+                switch (answer)
+                {
+                    case 1: weather = Create();
+                        break;
+                    case 2:
+                        weather.Print();
+                        break;
+                    case 3:
+                        for (m = Month.January; m <= Month.December; m++)
+                            if ((int)m == weather.Month)
+                                Console.WriteLine("Выбранный вами месяц {0}", m);
+                        break;
+                    case 4:
+                        Console.WriteLine("Месяц начинается с {0}-го дня", weather.Day);
+                        break;
+                    case 5:
+                        Console.Write("Новый месяц=");
+                        weather.Month = int.Parse(Console.ReadLine());
+                        break;
+                    case 6:
+                        Console.Write("Новый день недели=");
+                        weather.Day = int.Parse(Console.ReadLine());
+                        break;
+                    case 7:
+                        Console.Write("Задать новый массив по умолчанию (1)/ ввести массив вручную (2)");
+                        switch(int.Parse(Console.ReadLine()))
+                        {
+                            case 1:
+                                weather.Temperature = weather.Temperature;
+                                break;
+                            case 2:
+                                int[,] value;
+                                int a, b;
+                                Console.WriteLine("Введите количество недель, который вы хотите заполнить");
+                                a = int.Parse(Console.ReadLine());
+                                Console.WriteLine("Введите количество дней, который вы хотите заполнить");
+                                b = int.Parse(Console.ReadLine());
+                                value = new int[a, b];
+                                for (int i = 0; i < a; i++)
+                                    for (int j = 0; j < b; j++)
+                                    {
+                                        Console.Write("Введите температуру: ");
+                                        value[i, j] = int.Parse(Console.ReadLine());
+                                    }
+                                weather.Temperature = value;
+                                break;
+
+                        }
+                        weather.Month = int.Parse(Console.ReadLine());
+                        break;
+                    case 8:
+                        int d, t;
+                        Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
+                        температура {1}-го числа составляла {3} градуса(-ов) ", weather.MaxDelta(out d, out t), d, d + 1, t);
+                        // Console.WriteLine(weather.MaxDelta());
+                        break;
+                    case 9:
+                        Environment.Exit(0);
+                        break;
+                }
+            }
         }
     }
 }
