@@ -18,6 +18,7 @@ namespace Фоновая_4._2
         private int month;
         private int day;
         private int[,] temperature;
+        static Random rnd = new Random();
         static int[] days = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
         public MatrixWeather()
@@ -29,19 +30,17 @@ namespace Фоновая_4._2
         private static int[,] FillArray(int n, int m)
         {
             int[,] temperature = new int[n / 7 + 1, 7];
-            Random rnd = new Random();
+            
             for (int i = 0; i <= (int)n / 7; i++)
             {
                 for (int j = 0; j < 7; j++)
                 {
                     if (m == 12 || m == 1 || m == 2)
-                        temperature[i, j] = rnd.Next(-25, 0);
-                    else if (2 < m && m < 6)
-                        temperature[i, j] = rnd.Next(-5, 15);
-                    else if (5 < m && m < 9)
+                        temperature[i, j] = rnd.Next(-20, 5);
+                    else if (2 < m && m <= 4 || (m < 12 && m >= 9))
+                        temperature[i, j] = rnd.Next(5, 15);
+                    else if (5 <= m && m < 9)
                         temperature[i, j] = rnd.Next(10, 30);
-                    else if (8 < m && m < 12)
-                        temperature[i, j] = rnd.Next(-10, 15);
                 }
             }
             return temperature;
@@ -322,56 +321,36 @@ namespace Фоновая_4._2
         static void Main(string[] args)
         {
             Month m;
-            //            while (true)
-            //            {
-            //                int answer = -1;
-            //                Console.WriteLine(@"Что вы хотите сделать?
-            //1 - Создать объект
-            //2 - Вывести температурные показатели
-            //3 - Вывести месяц
-            //4 - Вывести день (с которого начинается месяц)
-            //5 - задать новый месяц
-            //6 - задать новый день недели
-            //7 - Задать массив температур
-            //8 - Найти максимальную дельту температур
-            //9 - Вывести количество дней с температурой = 0
-            //10 - Выйти из программы");
-            //                answer = int.Parse(Console.ReadLine());
+
             MatrixWeather weather = Create();
             weather.Print();
             int d, t;
             for (m = Month.January; m <= Month.December; m++)
                 if ((int)m == weather.Month)
                     Console.WriteLine("Выбранный вами месяц {0}", m);
+
             Console.WriteLine("Месяц начинается с {0}-го дня", weather.Day);
+
             Console.Write("Новый месяц=");
             weather.Month = int.Parse(Console.ReadLine());
+
             Console.Write("Новый день недели=");
             weather.Day = int.Parse(Console.ReadLine());
-            //Console.Write("Задать новый массив по умолчанию (1)/ ввести массив вручную (2)");
-            int[,] value = { { 3, 1, 2, 0 , 7}, { 2, -10, -2, 7, 0 } };
-                    //int a, b;
-                    //        Console.WriteLine("Введите количество недель, который вы хотите заполнить");
-                    //        a = int.Parse(Console.ReadLine());
-                    //        Console.WriteLine("Введите количество дней, который вы хотите заполнить");
-                    //        b = int.Parse(Console.ReadLine());
-                    //        value = new int[a, b];
-                    //        for (int i = 0; i < a; i++)
-                    //            for (int j = 0; j < b; j++)
-                    //            {
-                    //                Console.Write("Введите температуру: ");
-                    //                value[i, j] = int.Parse(Console.ReadLine());
-                    //            }
-            weather.Temperature = value;
+
             for (m = Month.January; m <= Month.December; m++)
                 if ((int)m == weather.Month)
                     Console.WriteLine("Выбранный вами месяц {0}", m);
             Console.WriteLine("Месяц начинается с {0}-го дня", weather.Day);
             weather.Print();
+
             Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
 температура {1}-го числа составляла {3} градуса(-ов) ", weather.MaxDelta(out d, out t), d, d + 1, t);
             Console.WriteLine("Температура была нулевой {0} дней (дня)", weather.Zero_Temp);
-                
+
+            int[,] value = { { 3, 1, 2, 0 , 7}, { 2, -10, -2, 7, 0 } };
+
+            weather.Temperature = value;
+            weather.Print();
             
         }
     }
