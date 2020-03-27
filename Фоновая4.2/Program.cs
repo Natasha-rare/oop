@@ -21,6 +21,72 @@ namespace Фоновая_4._2
         static Random rnd = new Random();
         static int[] days = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
+        public static bool operator >(MatrixWeather weather1, MatrixWeather weather2)
+        {
+            return (weather1.Month > weather2.Month);
+
+        }
+
+        public static bool operator <(MatrixWeather weather1, MatrixWeather weather2)
+        {
+            return (weather1.Month < weather2.Month);
+        }
+
+        public static MatrixWeather operator ++(MatrixWeather weather)
+        {
+            weather.Day = weather.Day++;
+            return weather;
+        }
+
+        public static MatrixWeather operator --(MatrixWeather weather)
+        {
+            weather.Day = weather.Day--;
+            return weather;
+        }
+
+        public int LenTemp
+        {
+            get
+            {
+                return temperature.GetLength(0);
+            }
+        }
+
+        public int this[int i, int j]
+        {
+            get
+            {
+                try
+                {
+                    return temperature[i, j];
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    Console.WriteLine(@"Вы ввели не правильные значения. Попробуйте еще раз
+(запрос должен иметь вид объект[i, j], где вместо i должно быть число от 0 до {0},
+а вместо j - число от 0 до 6)", days[month]);
+                    return -1000;
+                }
+            }
+        }
+
+        public static bool operator true(MatrixWeather weather)
+        {
+            
+            for (int i = 0; i < weather.Temperature.GetLength(0); i++)
+                for (int j = 0; j < 7; j++)
+                    if (weather.Temperature[i, j] < 0) return false;
+            return true; 
+        }
+
+        public static bool operator false(MatrixWeather weather)
+        {
+            for (int i = 0; i < weather.Temperature.GetLength(0); i++)
+                for (int j = 0; j < 7; j++)
+                    if (weather.Temperature[i, j] < 0) return true;
+            return false;
+        }
+
         public MatrixWeather()
         {
             month = day = 1;
@@ -203,7 +269,7 @@ namespace Фоновая_4._2
                 {
                     Console.WriteLine("Ошибка: {0}", error.Message);
                 }
-}
+            }
         }
 
         public int Month
@@ -351,7 +417,9 @@ namespace Фоновая_4._2
 
             weather.Temperature = value;
             weather.Print();
-            
+            weather++;
+            weather.Print();
+
         }
     }
 }
