@@ -79,7 +79,7 @@ namespace Классы
 
         public static bool operator |(Point3D obj1, Point3D obj2)
         {
-            return (obj1.x >= 0 && obj1.y >= 0 && obj1.z >= 0) & (obj2.x >= 0 && obj2.y >= 0 && obj2.z >= 0);
+            return (obj1.x >= 0 && obj1.y >= 0 && obj1.z >= 0) | (obj2.x >= 0 && obj2.y >= 0 && obj2.z >= 0);
         }
 
         public static bool operator true(Point3D obj)

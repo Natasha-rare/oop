@@ -14,7 +14,7 @@ namespace Фоновая_4._2
     }
 
     class MatrixWeather
-    {
+    {
         private int month;
         private int day;
         private int[,] temperature;
@@ -34,14 +34,46 @@ namespace Фоновая_4._2
 
         public static MatrixWeather operator ++(MatrixWeather weather)
         {
-            weather.Day = weather.Day++;
+            int a = weather.Day + 1;
+            weather.Day = a;
             return weather;
         }
 
         public static MatrixWeather operator --(MatrixWeather weather)
         {
-            weather.Day = weather.Day--;
+            int a = weather.Day - 1;
+            weather.Day = a;
             return weather;
+        }
+
+        static int [] Convert_to_Mas(MatrixWeather weather)
+        {
+            int[] mas = new int[weather.Count_Days];
+            int k = 0;
+            for (int i = 0; i < weather.Temperature.GetLength(0); i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    if (!(i == 0 && j < weather.Day) && i * 7 + j < weather.Count_Days)
+                    {
+                        mas[k] = weather.Temperature[i, j];
+                        k++;
+                    }
+                }
+            }
+            return mas;
+        }
+
+        public static bool operator &(MatrixWeather weather1, MatrixWeather weather2)
+        {
+            int[] mas1 = Convert_to_Mas(weather1);
+            int[] mas2 = Convert_to_Mas(weather2);
+
+            for (int i = 0; i < Math.Min(weather1.LenTemp, weather2.LenTemp); i++)
+            {
+                if (mas1[i] != mas2[i]) return false;
+            }
+            return true;
         }
 
         public int LenTemp
@@ -58,14 +90,29 @@ namespace Фоновая_4._2
             {
                 try
                 {
-                    return temperature[i, j];
+                    return temperature[i - 1, j - 1];
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Console.WriteLine(@"Вы ввели не правильные значения. Попробуйте еще раз
-(запрос должен иметь вид объект[i, j], где вместо i должно быть число от 0 до {0},
-а вместо j - число от 0 до 6)", days[month]);
+                    Console.WriteLine(@"Вы ввели не правильные значения.
+Запрос должен иметь вид объект[i, j],
+где вместо i должно быть число от 1 до {0},
+а вместо j - число от 1 до 7)", days[month - 1]);
                     return -1000;
+                }
+            }
+            set
+            {
+                try
+                {
+                    temperature[i - 1, j - 1] = value;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    Console.WriteLine(@"Вы ввели не правильные значения.
+Запрос должен иметь вид объект[i, j],
+где вместо i должно быть число от 1 до {0},
+а вместо j - число от 1 до 7)", days[month - 1]);
                 }
             }
         }
@@ -96,7 +143,7 @@ namespace Фоновая_4._2
         private static int[,] FillArray(int n, int m)
         {
             int[,] temperature = new int[n / 7 + 1, 7];
-            
+
             for (int i = 0; i <= (int)n / 7; i++)
             {
                 for (int j = 0; j < 7; j++)
@@ -112,20 +159,34 @@ namespace Фоновая_4._2
             return temperature;
         }
 
-        private MatrixWeather(int day, int month)
+        private MatrixWeather(int day, int month, bool automatic_fill)
         {
             this.month = month;
             this.day = day;
-            temperature = FillArray(days[month - 1], month);
+            if (!automatic_fill)
+            {
+                temperature = FillArray(days[month - 1], month);
+            }
+            else
+            {
+                temperature = new int[days[month - 1] / 7 + 1, 7];
+                for (int i = 0; i <= (int)days[month - 1] / 7; i++)
+                {
+                    for (int j = 0; j < 7; j++)
+                    {
+                        temperature[i, j] = j;
+                    }
+                }
+            }
         }
 
-        public static MatrixWeather Create(int day, int month)
+        public static MatrixWeather Create(int day, int month, bool automatic_fill)
         {
             try
             {
                 if (!(day > 0 && month > 0 && day <= 7 && month <= 12))
                     throw new Exception("Такой даты не существует. Устанавливается дата 01.01");
-                return new MatrixWeather(day, month);
+                return new MatrixWeather(day, month, automatic_fill);
             }
             catch (Exception error)
             {
@@ -351,7 +412,7 @@ namespace Фоновая_4._2
         static MatrixWeather Create()
         {
             Console.WriteLine("Вы хотите самостоятельно задать день и месяц? Да(1)/ нет (2)");
-            byte answer;
+            byte answer, answer2;
             // Просим выбрать конструктор объекта
             do
             {
@@ -379,46 +440,108 @@ namespace Фоновая_4._2
                     Console.Write("day=");
                     s = Console.ReadLine();
                 } while (!int.TryParse(s, out day));
-                return MatrixWeather.Create(day, month);
 
+                Console.WriteLine("Шаблонный массив температур(1) или рандомный(2)");
+
+                do
+                {
+                    Console.WriteLine("Введите выбранный вариант (1 или 2)");
+                    answer2 = byte.Parse(Console.ReadLine());
+                }
+                while (answer2 != 1 && answer2 != 2);
+                if (answer2 == 1)
+                    return MatrixWeather.Create(day, month, true);
+                return MatrixWeather.Create(day, month, false);
             }
             return new MatrixWeather();
         }
         static void Main(string[] args)
         {
-            Month m;
+            string s;
+            int week, day;
 
             MatrixWeather weather = Create();
             weather.Print();
-            int d, t;
-            for (m = Month.January; m <= Month.December; m++)
-                if ((int)m == weather.Month)
-                    Console.WriteLine("Выбранный вами месяц {0}", m);
 
-            Console.WriteLine("Месяц начинается с {0}-го дня", weather.Day);
+            if (weather)
+                Console.WriteLine("Температура ни разу не опускалась ниже нуля");
+            else
+                Console.WriteLine("Температура опускалась ниже нуля");
 
-            Console.Write("Новый месяц=");
-            weather.Month = int.Parse(Console.ReadLine());
-
-            Console.Write("Новый день недели=");
-            weather.Day = int.Parse(Console.ReadLine());
-
-            for (m = Month.January; m <= Month.December; m++)
-                if ((int)m == weather.Month)
-                    Console.WriteLine("Выбранный вами месяц {0}", m);
-            Console.WriteLine("Месяц начинается с {0}-го дня", weather.Day);
-            weather.Print();
-
-            Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
-температура {1}-го числа составляла {3} градуса(-ов) ", weather.MaxDelta(out d, out t), d, d + 1, t);
-            Console.WriteLine("Температура была нулевой {0} дней (дня)", weather.Zero_Temp);
-
-            int[,] value = { { 3, 1, 2, 0 , 7}, { 2, -10, -2, 7, 0 } };
-
-            weather.Temperature = value;
-            weather.Print();
             weather++;
+            Console.WriteLine("Дневник сдвинули на 1 день вправо");
             weather.Print();
+
+            Console.WriteLine("Температура во второй вторник месяца была равна {0}", weather[2, 2]);
+
+            Console.WriteLine("Введите неделю, день недели и новое значение температуры");
+
+            Console.WriteLine("Введите неделю");
+            do
+            {
+                Console.Write("week=");
+                s = Console.ReadLine();
+            } while (!int.TryParse(s, out week));
+
+            Console.WriteLine("Введите день недели");
+
+            do
+            {
+                Console.Write("day=");
+                s = Console.ReadLine();
+            } while (!int.TryParse(s, out day));
+
+            Console.Write("new_temp=");
+            weather[week, day] = int.Parse(Console.ReadLine());
+            weather.Print();
+
+            MatrixWeather new_weather = Create();
+            new_weather.Print();
+
+            new_weather--;
+            Console.WriteLine("Дневник сдвинули на 1 день влево");
+            new_weather.Print();
+
+            if (weather > new_weather) Console.WriteLine(@"Первый дневник погоды больше второго
+(т.е хранит информацию о более позднем месяце)");
+            else Console.WriteLine(@"Первый дневник погоды меньше второго
+(т.е хранит информацию о более раннем месяце)");
+
+
+            if (weather & new_weather) Console.WriteLine("Дневники погоды одинаковые (температура всех дней недели совпадает)");
+            Console.WriteLine("Дневники погоды разные (температура всех дней недели не совпадает)");
+
+            //Month m;
+            //int d, t;
+            //for (m = Month.January; m <= Month.December; m++)
+            //    if ((int)m == weather.Month)
+            //        Console.WriteLine("Выбранный вами месяц {0}", m);
+
+            //Console.WriteLine("Месяц начинается с {0}-го дня", weather.Day);
+
+            //Console.Write("Новый месяц=");
+            //weather.Month = int.Parse(Console.ReadLine());
+
+            //Console.Write("Новый день недели=");
+            //weather.Day = int.Parse(Console.ReadLine());
+
+            //for (m = Month.January; m <= Month.December; m++)
+            //    if ((int)m == weather.Month)
+            //        Console.WriteLine("Выбранный вами месяц {0}", m);
+            //Console.WriteLine("Месяц начинается с {0}-го дня", weather.Day);
+            //weather.Print();
+
+            //Console.WriteLine(@"Максимальна дельта температур равна {0}, это случилось с {1} на {2} число
+            //температура {1}-го числа составляла {3} градуса(-ов) ", weather.MaxDelta(out d, out t), d, d + 1, t);
+            //Console.WriteLine("Температура была нулевой {0} дней (дня)", weather.Zero_Temp);
+
+            //int[,] value = { { 3, 1, 2, 0, 7 }, { 2, -10, -2, 7, 0 } };
+
+            //weather.Temperature = value;
+            //weather.Print();
+            //weather++;
+            //weather.Print();
+
 
         }
     }
