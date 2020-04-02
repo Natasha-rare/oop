@@ -14,7 +14,7 @@ namespace Фоновая_4._2
     }
 
     class MatrixWeather
-    {
+    {
         private int month;
         private int day;
         private int[,] temperature;
