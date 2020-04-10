@@ -141,8 +141,8 @@ namespace Проект_3_четверти
         {
             player[player.Cards_Left - 1] = this.cards[0];
             player.Cards_Left = player.Cards_Left + 1;
-            player[player.Cards_Left] = player[0];
-            player[0] = 0;
+            player[player.Cards_Left - 1] = player[0];
+            //player[0] = 0;
             player.Move_Cards();
             this.cards[0] = 0;
             this.cards_left -= 1;
@@ -208,7 +208,11 @@ namespace Проект_3_четверти
                 Console.WriteLine("У первого игрока: {0} карт", player1.Cards_Left);
                 Console.WriteLine("У второго игрока: {0} карт", player2.Cards_Left);
                 player1.Show();
+                //player1.Print();
+                //Console.WriteLine("-----");
                 player2.Show();
+                //player2.Print();
+                //Console.WriteLine("-----------------------");
                 if ((int)player1[0] > (int)player2[0])
                 {
                     Console.WriteLine("Первый игрок выиграл тур и получил карты: {0}, {1}", player1[0], player2[0]);
@@ -223,26 +227,20 @@ namespace Проект_3_четверти
                     Console.WriteLine("Карты одинакого достоинства. Начинается война");
                     if (player1.Fight(player2, 1) == 0)
                     {
-                        player1.Move_Cards();
                         player2.Give(player1);
-                        player1.Move_Cards();
                         player2.Give(player1);
-                        player1.Move_Cards();
                         player2.Give(player1);
                         continue;
                     }
-                    else if (player1.Fight(player2, 1) == 1)
+                    if (player1.Fight(player2, 1) == 1)
                     {
-                        player2.Move_Cards();
                         player1.Give(player2);
-                        player2.Move_Cards();
                         player1.Give(player2);
-                        player2.Move_Cards();
                         player1.Give(player2);
                         continue;
 
                     }
-                    else if (player1.Fight(player2, 1) == 2)
+                    if (player1.Fight(player2, 1) == 2)
                     {
                         Console.WriteLine("ИГРА ОКОНЧЕНА! Победил игрок 1");
                         break;
