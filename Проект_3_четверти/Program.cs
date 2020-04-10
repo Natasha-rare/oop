@@ -23,17 +23,27 @@ namespace Проект_3_четверти
         {
             for (int i = 0; i < cards.Length; i++)
             {
-                cards[i] = Generate_Cards(); // заполняем массив
+                cards[i] = Generate_Cards(this.cards); // заполняем массив
             }
             return cards;
         }
 
-        public Pack Generate_Cards() // генерируем карту
+        public void Shake()
+        {
+            Pack[] new_c = new Pack[36];
+            for (int i = 0; i < cards.Length; i++)
+            {
+                new_c[i] = Generate_Cards(new_c); // заполняем массив
+            }
+            cards = new_c;
+        }
+
+        public Pack Generate_Cards(Pack[] cards) // генерируем карту
         {
             Pack n;
             n = (Pack)rnd.Next(6, 15);
-            if (Repeat(n, this.cards)) return n;
-            return Generate_Cards();
+            if (Repeat(n, cards)) return n;
+            return Generate_Cards(cards);
         }
 
         public bool Repeat(Pack n, Pack[] cards) // проверка наличия более 4-х карт одинаковой масти
@@ -142,7 +152,6 @@ namespace Проект_3_четверти
             player[player.Cards_Left - 1] = this.cards[0];
             player.Cards_Left = player.Cards_Left + 1;
             player[player.Cards_Left - 1] = player[0];
-            //player[0] = 0;
             player.Move_Cards();
             this.cards[0] = 0;
             this.cards_left -= 1;
@@ -163,33 +172,64 @@ namespace Проект_3_четверти
             }
         }
 
-        public int Fight(Player player1, int n)
+        public int Fight(Player player1, Pack[] pack, int n)
         {
-            if (this.cards[n + 1] == 0 || this.cards[n] == 0) return 1;
-            if (player1[1 + n] == 0 || player1[n] == 0) return 2;
+            //Console.WriteLine("n={0}", n);
+
+            pack[n - 1] = this.cards[n - 1];
+            pack[n] = player1[n - 1];
+            // Последовательно показываем карты, а затем добавляем их во временную колоду
+            if (this.cards[n] == 0) return 1; // окончание колоды во время войны
             this.Show(n);
+            pack[n + 1] = this.cards[n];
+            if (player1[n] == 0) return 2; // окончание колоды во время войны
             player1.Show(n);
+            pack[n + 2] = player1[n];
+            if (this.cards[n + 1] == 0) return 1; // окончание колоды во время войны
             this.Show(1 + n);
+            pack[n + 3] = this.cards[n + 1];
+            if (player1[n + 1] == 0) return 2; // окончание колоды во время войны
             player1.Show(1 + n);
-            if ((int)player1[1 + n] > (int)this.cards[1 + n])
+            pack[n + 4] = player1[n + 1];
+            if ((int)player1[1 + n] > (int)this.cards[1 + n]) // Сравниваем масти карт, выложенных вторыми
             {
                 Console.WriteLine(@"Первый игрок выложил: закрытая и {0}
 второй игрок: закрытая и {1}
-Побеждает игрок 2. Он получает {0} {1} {2} {3}", cards[1 + n], player1[1 + n], cards[n], player1[n]);
+Побеждает игрок 2. Он получает: ", pack[n + 3], pack[n + 4]);
+                for (int i = 0; i < n + 2; i++)
+                {
+                    player1.Give(this);
+                }
+                foreach (Pack x in pack)
+                {
+                    if (x == 0) break;
+                    Console.Write("{0} ", x);
+                }
+                Console.WriteLine();
                 return 1;
             }
             if (((int)player1[1 + n] < (int)this.cards[1 + n]))
             {
                 Console.WriteLine(@"Первый игрок выложил: закрытая и {0}
 второй игрок: закрытая и {1}
-Побеждает игрок 1. Он получает {0} {1} {2} {3}", cards[1 + n], player1[1 + n], cards[n], player1[n]);
+Побеждает игрок 1. Он получает: ", pack[n + 3], pack[n + 4]);
+                for (int i = 0; i < (n + 2); i++)
+                {
+                    player1.Give(this);
+                }
+                foreach (Pack x in pack)
+                {
+                    if (x == 0) break;
+                    Console.Write("{0} ", x);
+                }
+                Console.WriteLine();
                 return 0;
             }
 
             Console.WriteLine(@"Первый игрок выложил: закрытая и {0}
 второй игрок: закрытая и {1}
 Ничья. Война продолжается", cards[1 + n], player1[1 + n]);
-            return Fight(player1, n++);
+            return Fight(player1, pack, n+= 2);
                 
         }
        
@@ -197,22 +237,16 @@ namespace Проект_3_четверти
 
     class Program
     {
-        static void Main(string[] args)
+        static public int Game(Player player1, Player player2)
         {
-            Cards cards = new Cards();
-            Player player1 = new Player(cards);
-            player1.Print();
-            Player player2 = new Player(cards);
-            while(player1.Cards_Left != 0 && player2.Cards_Left != 0)
+            while (true)
             {
+                Console.WriteLine("-----------NEXT-ROUND--------------->>>>>");
                 Console.WriteLine("У первого игрока: {0} карт", player1.Cards_Left);
                 Console.WriteLine("У второго игрока: {0} карт", player2.Cards_Left);
                 player1.Show();
-                //player1.Print();
-                //Console.WriteLine("-----");
                 player2.Show();
-                //player2.Print();
-                //Console.WriteLine("-----------------------");
+
                 if ((int)player1[0] > (int)player2[0])
                 {
                     Console.WriteLine("Первый игрок выиграл тур и получил карты: {0}, {1}", player1[0], player2[0]);
@@ -223,45 +257,96 @@ namespace Проект_3_четверти
                     Console.WriteLine("Второй игрок выиграл тур и получил карты: {0}, {1}", player1[0], player2[0]);
                     player1.Give(player2);
                 }
-                else {
+                else
+                {
                     Console.WriteLine("Карты одинакого достоинства. Начинается война");
-                    if (player1.Fight(player2, 1) == 0)
+                    Console.WriteLine("<<<<<-----------FIGHT--------------->>>>>");
+                    Pack[] pack = new Pack[18];
+                    int res = player1.Fight(player2, pack, 1);
+                    if (res == 2)
                     {
-                        player2.Give(player1);
-                        player2.Give(player1);
-                        player2.Give(player1);
-                        continue;
-                    }
-                    if (player1.Fight(player2, 1) == 1)
-                    {
-                        player1.Give(player2);
-                        player1.Give(player2);
-                        player1.Give(player2);
-                        continue;
-
-                    }
-                    if (player1.Fight(player2, 1) == 2)
-                    {
-                        Console.WriteLine("ИГРА ОКОНЧЕНА! Победил игрок 1");
+                        Console.WriteLine("У игрока 2 закончились карты. ИГРА ОКОНЧЕНА! Победил игрок 1");
                         break;
                     }
-                    if (player1.Fight(player2, 1) == 3)
+                    if (res == 3)
                     {
-                        Console.WriteLine("ИГРА ОКОНЧЕНА! Победил игрок 2");
+                        Console.WriteLine("У игрока 1 закончились карты. ИГРА ОКОНЧЕНА! Победил игрок 2");
                         break;
                     }
-
                 }
-                Console.ReadKey();
-            }
-            //cards.Print();
-            //Console.WriteLine("-----------------------------------------------");
-            //player1.Print();
-            //Console.WriteLine("-----------------------------------------------");
-            //cards.Print();
-            //player2.Print();
-            //cards.Print();
+                if (player1.Cards_Left < 1)
+                {
+                    Console.WriteLine("ИГРА ОКОНЧЕНА! Победил игрок 2");
+                    Console.WriteLine("Хотите сыграть еще раз? Да(1)/ нет(2)");
+                    int answer = int.Parse(Console.ReadLine());
+                    if (answer == 2) break;
+                }
 
+                else if (player2.Cards_Left < 1)
+                {
+                    Console.WriteLine("ИГРА ОКОНЧЕНА! Победил игрок 1");
+                    Console.WriteLine("Хотите сыграть еще раз? Да(1)/ нет(2)");
+                    int answer = int.Parse(Console.ReadLine());
+                    if (answer == 2) break;
+                    Cards cards = new Cards();
+                    return Game(new Player(cards), new Player(cards));
+                }
+                else if (Console.ReadLine() == "4") return 0;
+            }
+            return 0;
+        }
+
+        static void Main(string[] args)
+        {
+            int a = -1;
+            
+            Console.WriteLine(@"Добро пожаловать в игру Пьяница!");
+            while (true)
+            {
+                Console.WriteLine(@"Что вы хотите сделать?
+/1 - вывести колоду 1-го игрока
+/2 - вывести колоду 2-го игрока
+/3 - начать игру
+/4 - выйти
+/5 - вывести всю колоду
+/6 - перемешать колоду");
+                string answer = Console.ReadLine();
+                Cards cards = new Cards();
+                if (answer == "5")
+                {
+                    cards.Print();
+                    continue;
+                }
+                else if (answer == "6")
+                {
+                    cards.Shake();
+                    cards.Print();
+                    continue;
+                }
+                Player player1 = new Player(cards);
+                Player player2 = new Player(cards);
+                if (answer == "1")
+                {
+                    player1.Print();
+                    continue;
+                }
+                else if (answer == "2")
+                {
+                    player2.Print();
+                    continue;
+                }
+                else if (answer == "3")
+                {
+                    a = Game(player1, player2);
+                    continue;
+                }
+                else Environment.Exit(0);
+                if (a == 0)
+                {
+                    Console.WriteLine("Спасибо за игру!");
+                    Environment.Exit(0);
+                }
+            }  
         }
     }
 }
