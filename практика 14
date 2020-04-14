@@ -1,0 +1,153 @@
+using System;
+
+namespace Demo_Point
+{
+    class DemoPoint
+    {
+        protected int x1;
+        protected int y1;
+        public  DemoPoint() { x1 = y1 = 0; }
+        public DemoPoint(int x, int y)
+        {
+            x1 = x;
+            y1 = y;
+        }
+
+        public void Show()
+        {
+            Console.WriteLine("Координаты первой точки: ({0}, {1})", x1, y1);
+        }
+    }
+
+    class DemoLine: DemoPoint
+    {
+        private int x2;
+        private int y2;
+
+        public DemoLine()
+            :base() { x2 = y2 = 1; }
+
+        public DemoLine(int x1, int  y1, int x2, int y2)
+            :base(x1, y1)
+        {
+            this.x2 = x2;
+            this.y2 = y2;
+        }
+        new public void Show()
+        {
+            base.Show();
+            Console.WriteLine("Координаты второй точки: ({0}, {1})", x2, y2);
+        }
+    }
+
+    class Program
+    {
+        static DemoPoint Create()
+        {
+            Console.WriteLine("Вы хотите создать точку по умолчанию (1) или самостоятельно ввести координаты(2)");
+           
+            int x, y;
+            byte answer;
+            string s;
+            // Просим выбрать конструктор объекта
+            do
+            {
+                Console.WriteLine("Введите выбранный вариант (1 или 2)");
+                answer = byte.Parse(Console.ReadLine());
+            }
+            while (answer != 1 && answer != 2);
+
+
+            if (answer == 1)
+            {
+                return new DemoPoint();
+            }
+            else
+            {
+
+                Console.WriteLine("Введите x");
+                do
+                {
+                    Console.Write("x=");
+                    s = Console.ReadLine();
+                } while (!int.TryParse(s, out x));
+
+                Console.WriteLine("Введите y");
+
+                do
+                {
+                    Console.Write("y=");
+                    s = Console.ReadLine();
+                } while (!int.TryParse(s, out y));
+                return new DemoPoint(x, y);
+            }
+        }
+
+        static DemoLine Create2()
+        {
+            Console.WriteLine("Вы хотите создать линию по умолчанию (1) или самостоятельно ввести координаты(2)");
+
+            int x, y, x2, y2;
+            byte answer;
+            string s;
+            // Просим выбрать конструктор объекта
+            do
+            {
+                Console.WriteLine("Введите выбранный вариант (1 или 2)");
+                answer = byte.Parse(Console.ReadLine());
+            }
+            while (answer != 1 && answer != 2);
+
+
+            if (answer == 1)
+            {
+                return new DemoLine();
+            }
+            else
+            {
+
+                Console.WriteLine("Введите x");
+                do
+                {
+                    Console.Write("x=");
+                    s = Console.ReadLine();
+                } while (!int.TryParse(s, out x));
+
+                Console.WriteLine("Введите y");
+
+                do
+                {
+                    Console.Write("y=");
+                    s = Console.ReadLine();
+                } while (!int.TryParse(s, out y));
+
+
+                Console.WriteLine("Введите 2-й x");
+                do
+                {
+                    Console.Write("x=");
+                    s = Console.ReadLine();
+                } while (!int.TryParse(s, out x2));
+
+                Console.WriteLine("Введите 2-й y");
+
+                do
+                {
+                    Console.Write("y=");
+                    s = Console.ReadLine();
+                } while (!int.TryParse(s, out y2));
+                return new DemoLine(x, y, x2, y2);
+            }
+        }
+        static void Main(string[] args)
+        {
+            DemoPoint point1 = Create();
+            point1.Show();
+
+            Console.WriteLine("------------------------------");
+            DemoLine point2 = Create2();
+
+            point2.Show();
+        }
+    }
+}
