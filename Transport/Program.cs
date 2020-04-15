@@ -49,7 +49,7 @@ namespace Transport
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Transport car = new Transport();
         }
     }
 }
