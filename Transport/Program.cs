@@ -49,6 +49,13 @@ namespace Transport
         {
             return (length * spend_fuel) / 100;
         }
+
+        public void Print()
+        {
+            Console.WriteLine(@"Название: {0}
+Расход топлива: {1}
+Вместительность бака: {2}", name, spend_fuel, container_fuel);
+        }
     }
 
 
@@ -78,13 +85,13 @@ namespace Transport
         //    return people / passengers * 100;
         //}
 
-        public int Percent
+        public double Percent
         {
-            get { return passengers / max_pas[(int)body] * 100; }
+            get { return passengers / (double)max_pas[(int)body] * 100; }
         }
 
 
-        new public int Need_Fuel(int length)
+        new public double Need_Fuel(int length)
         {
             return (length * spend_fuel * (1 -this.Percent / 100)) / 100;
         }
@@ -106,7 +113,16 @@ namespace Transport
                     Console.WriteLine("Ошибка: {0}", error.Message);
                 }
             }
-        } 
+        }
+
+        public void Print()
+        {
+            Console.WriteLine("***\nАвтомобиль\n***");
+            base.Print();
+            Console.WriteLine(@"Тип кузова: {0}
+Кол-во пассажиров: {1}
+Заполненность автомобиля: {2:f1}%", Convert.ToString(body), passengers, Percent);
+        }
 
     }
 
@@ -138,12 +154,12 @@ namespace Transport
             }
         }
 
-        public int Percent
+        public double Percent
         {
-            get { return weight / capacity * 100; }
+            get { return weight / (double)capacity * 100; }
         }
 
-        new public int Need_Fuel(int length)
+        new public double Need_Fuel(int length)
         {
             return (length * spend_fuel * (1 - this.Percent / 100) / 100);
         }
@@ -165,6 +181,15 @@ namespace Transport
                     Console.WriteLine("Ошибка: {0}", error.Message);
                 }
             }
+        }
+
+        public void Print()
+        {
+            Console.WriteLine("***\nГрузовик\n***");
+            base.Print();
+            Console.WriteLine(@"Грузоподъемность: {0}
+Масса груза: {1}
+Загруженность автомобиля: {2:f1}%", capacity, weight, Percent);
         }
 
     }
@@ -189,9 +214,9 @@ namespace Transport
             this.price = price;
         }
 
-        public int Percent
+        public double Percent
         {
-            get { return passengers / max_pas * 100; }
+            get { return passengers / (double)max_pas * 100; }
         }
 
         public int Money // выручка
@@ -199,17 +224,55 @@ namespace Transport
             get { return passengers * price; }
         }
 
-        new public int Need_Fuel(int length)
+        new public double Need_Fuel(int length)
         {
             return (length * spend_fuel * (1 - this.Percent / 100) / 100);
         }
+
+        public void Print()
+        {
+            Console.WriteLine("***\nАвтобус\n***");
+            base.Print();
+            Console.WriteLine(@"Цена проезда: {0}
+Кол-во пассажиров: {1}
+Загруженность автобуса: {2:f1}%", price, passengers, Percent);
+        }
+
     }
 
     class Program
     {
         static void Main(string[] args)
         {
-            Transport car = new Transport();
+            string [] car_names = {"Audi", "BMW", "KIA"};
+            string[] lorry_names = { "КАМАЗ", "ГАЗ", "МАЗ" };
+            string[] bus_names = { "KIA", "ГАЗ", "BAW" };
+
+            Lorry [] lorries = new Lorry[3];
+            PassengerCar[] cars = new PassengerCar[3];
+            Bus[] buses = new Bus[3];
+            Carcase a = Carcase.Седан;
+
+            for (int i=0; i < 3; i++)
+            {
+                cars[i] = new PassengerCar(a, (i + 2), car_names[i], (i + 1) * 10, (i + 1) * 11);
+                lorries[i] = new Lorry((i + 1) * 350, (i + 1) * 200 + 10, lorry_names[i], (i + 3) * 10, (i + 3) * 12);
+                buses[i] = new Bus(i + 5, 30 + (i + 1) * 5, bus_names[i], (i + 2) * 10, (i + 2) * 11);
+            }
+
+            for (int j = 0; j < 3; j++)
+            {
+                cars[j].Print();
+                Console.WriteLine("Количество топлива на 100 км: {0}", cars[j].Need_Fuel(100));
+                Console.WriteLine();
+                lorries[j].Print();
+                Console.WriteLine("Количество топлива на 100 км: {0}", lorries[j].Need_Fuel(100));
+                Console.WriteLine();
+                buses[j].Print();
+                Console.WriteLine("Количество топлива на 100 км: {0}", buses[j].Need_Fuel(100));
+                Console.WriteLine("\n");
+            }
+
         }
     }
 }
