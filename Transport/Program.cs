@@ -80,20 +80,15 @@ namespace Transport
             this.passengers = passengers;
         }
 
-        //public int Percent(int people) // процент загрузки
-        //{
-        //    return people / passengers * 100;
-        //}
-
         public double Percent
         {
-            get { return passengers / (double)max_pas[(int)body] * 100; }
+            get { return passengers / (double)max_pas[(int)body]; }
         }
 
 
         new public double Need_Fuel(int length)
         {
-            return (length * spend_fuel * (1 -this.Percent / 100)) / 100;
+            return (length * spend_fuel * (1 -this.Percent)) / 100;
         }
 
         public int Passengers
@@ -105,8 +100,8 @@ namespace Transport
                 {
                     if (value <= max_pas[(int)body]) passengers = value;
                     else
-                        throw new Exception("Введенное количество пассажиров " +
-                            "превышает возможное кол-во");
+                        throw new Exception(@"Введенное количество пассажиров превышает возможное.
+Ничего не меняется");
                 }
                 catch (Exception error)
                 {
@@ -121,7 +116,7 @@ namespace Transport
             base.Print();
             Console.WriteLine(@"Тип кузова: {0}
 Кол-во пассажиров: {1}
-Заполненность автомобиля: {2:f1}%", Convert.ToString(body), passengers, Percent);
+Заполненность автомобиля: {2:p0}", Convert.ToString(body), passengers, Percent);
         }
 
     }
@@ -145,7 +140,7 @@ namespace Transport
             {
                 if (weight > capacity) throw new Exception("Вес больше грузоподъемности. " +
                     "Он уменьшается на 10 кг");
-                this.weight = weight;
+                this.weight = weight - 10;
                 this.capacity = capacity;
             }
             catch (Exception error)
@@ -156,12 +151,12 @@ namespace Transport
 
         public double Percent
         {
-            get { return weight / (double)capacity * 100; }
+            get { return weight / (double)capacity; }
         }
 
         new public double Need_Fuel(int length)
         {
-            return (length * spend_fuel * (1 - this.Percent / 100) / 100);
+            return (length * spend_fuel * (1 - this.Percent) / 100);
         }
 
         public int Weight
@@ -174,7 +169,7 @@ namespace Transport
                 {
                     if (value <= capacity) capacity = value;
                     else
-                        throw new Exception("Введенная масса груза превышает грузоподъемность");
+                        throw new Exception("Введенная масса груза превышает грузоподъемность. Ничего не меняется");
                 }
                 catch (Exception error)
                 {
@@ -189,7 +184,7 @@ namespace Transport
             base.Print();
             Console.WriteLine(@"Грузоподъемность: {0}
 Масса груза: {1}
-Загруженность автомобиля: {2:f1}%", capacity, weight, Percent);
+Загруженность автомобиля: {2:p0}", capacity, weight, Percent);
         }
 
     }
@@ -216,7 +211,27 @@ namespace Transport
 
         public double Percent
         {
-            get { return passengers / (double)max_pas * 100; }
+            get { return passengers / (double)max_pas; }
+        }
+
+
+        public int Passengers
+        {
+            get { return passengers; }
+            set
+            {
+                try
+                {
+                    if (value <= max_pas) passengers = value;
+                    else
+                        throw new Exception(@"Введенное количество пассажиров превышает возможное.
+Ничего не меняется");
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine("Ошибка: {0}", error.Message);
+                }
+            }
         }
 
         public int Money // выручка
@@ -229,13 +244,15 @@ namespace Transport
             return (length * spend_fuel * (1 - this.Percent / 100) / 100);
         }
 
+
         public void Print()
         {
             Console.WriteLine("***\nАвтобус\n***");
             base.Print();
             Console.WriteLine(@"Цена проезда: {0}
 Кол-во пассажиров: {1}
-Загруженность автобуса: {2:f1}%", price, passengers, Percent);
+Загруженность автобуса: {2:p0}
+Выручка: {3}", price, passengers, Percent, Money);
         }
 
     }
@@ -263,16 +280,24 @@ namespace Transport
             for (int j = 0; j < 3; j++)
             {
                 cars[j].Print();
-                Console.WriteLine("Количество топлива на 100 км: {0}", cars[j].Need_Fuel(100));
+                Console.WriteLine("Количество топлива на 100 км: {0:f1}", cars[j].Need_Fuel(100));
                 Console.WriteLine();
                 lorries[j].Print();
-                Console.WriteLine("Количество топлива на 100 км: {0}", lorries[j].Need_Fuel(100));
+                Console.WriteLine("Количество топлива на 100 км: {0:f1}", lorries[j].Need_Fuel(100));
                 Console.WriteLine();
                 buses[j].Print();
-                Console.WriteLine("Количество топлива на 100 км: {0}", buses[j].Need_Fuel(100));
+                Console.WriteLine("Количество топлива на 100 км: {0:f1}", buses[j].Need_Fuel(100));
                 Console.WriteLine("\n");
             }
 
+            Console.WriteLine("Введите кол-во людей в машине");
+            cars[0].Passengers = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Введите массу груза");
+            lorries[0].Weight = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Введите кол-во людей в автобусе");
+            buses[0].Passengers = int.Parse(Console.ReadLine());
         }
     }
 }
