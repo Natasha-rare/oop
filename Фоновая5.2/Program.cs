@@ -7,7 +7,7 @@ namespace Фоновая5._2
         protected int x;
         protected int y;
         protected int v;
-        public int[,] field = Field(15);
+        protected int[,] field = Field(15);
         static Random rnd = new Random();
         public Creature() { }
 
@@ -79,10 +79,11 @@ namespace Фоновая5._2
             {
                 for (int j = 0; j < 15; j++)
                 {
-                    if (field[i, j] == 3) Console.Write("ᗤ "); // ᗤ - packman
+                    if (field[i, j] == 3) Console.Write("ᗧ "); // ᗤᗧ - packman
+                    else if (field[i, j] == 2) Console.Write("▦ "); //▦ - стена
                     else if (field[i, j] == 1) Console.Write("❦ "); // ❦ - вишенка
-                    else if (field[i, j] == 0) Console.Write("▨ "); // ▨ - еда
-                    else Console.Write("⬜"); // ⬜ - пустота
+                    else if (field[i, j] == 0) Console.Write("◂ "); // ◂ - еда
+                    else Console.Write("⃞ "); // ⃞ - пустота
                 }
                 Console.WriteLine();
             }
@@ -96,9 +97,89 @@ namespace Фоновая5._2
             for (int x = 0; x < 15; x++)
             {
                 for (int y = 0; y < 15; y++)
-                    field[x, y] = rnd.Next(2);
+                    if (x != 0 && y != 1)
+                        field[x, y] = rnd.Next(3);
+                    else
+                        field[x, y] = 0;
             }
             return field;
+        }
+    }
+
+
+    class Packman: Creature
+    {
+        public override void Move()
+        {
+            Console.WriteLine(@"Введите навравление:
+вперед - D
+назад - A
+вверх - W
+вниз - X");
+            string answer = Console.ReadKey().ToString();
+            switch (answer)
+            {
+                case "w":
+                    try
+                    {
+                        if (field[x - 1, y] != 2)
+                        {
+                            field[x, y] = -1;
+                            x--;
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("Packman не может туда идти;(");
+                    }
+                    break;
+                case "x":
+                    try
+                    {
+                        if (field[x + 1, y] != 2)
+                        {
+                            field[x, y] = -1;
+                            x++;
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("Packman не может туда идти;(");
+                    }
+                    break;
+                case "a":
+                    try
+                    {
+                        if (field[x, y - 1] != 2)
+                        {
+                            field[x, y] = -1;
+                            y--;
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("Packman не может туда идти;(");
+                    }
+                    break;
+                case "d":
+                    try
+                    {
+                        if (field[x, y + 1] != 2)
+                        {
+                            field[x, y] = -1;
+                            y++;
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("Packman не может туда идти;(");
+                    }
+                    break;
+                default:
+                    Environment.Exit(0);
+                    break;
+            }
+
         }
     }
 
@@ -142,9 +223,16 @@ namespace Фоновая5._2
 
         static void Main(string[] args)
         {
-            Creature packman = new Creature();
+            Packman packman = new Packman();
             Create(packman);
             packman.Draw();
+            while (true)
+            {
+                packman.Move();
+                packman.Draw();
+            }
+
+            
         }
     }
 }
