@@ -7,7 +7,7 @@ namespace Фоновая5._2
         protected int x;
         protected int y;
         protected int v;
-        private int[,] field = Field(15);
+        private int[,] field = Create_Field(15);
         static Random rnd = new Random();
         public Creature() { }
 
@@ -27,6 +27,15 @@ namespace Фоновая5._2
                 {
                     field[i, j] = value;
                }
+            }
+        }
+
+        public int[,] Field
+        {
+            get { return this.field; }
+            set
+            {
+                field = value;
             }
         }
 
@@ -94,7 +103,6 @@ namespace Фоновая5._2
 
         public virtual void Draw()
         {
-            field[x, y] = 3;
             for (int i = 0; i < 15; i++)
             {
                 for (int j = 0; j < 15; j++)
@@ -103,6 +111,7 @@ namespace Фоновая5._2
                     else if (field[i, j] == 2) Console.Write("▦ "); //▦ - стена
                     else if (field[i, j] == 1) Console.Write("❦ "); // ❦ - вишенка
                     else if (field[i, j] == 0) Console.Write("◂ "); // ◂ - еда
+                    else if (field[i, j] == 5) Console.Write("👻 "); // 👻 - ghost
                     else Console.Write("⃞ "); // ⃞ - пустота
                 }
                 Console.WriteLine();
@@ -111,7 +120,7 @@ namespace Фоновая5._2
 
         public virtual void Move() { }
 
-        static public int[,] Field(int m)
+        static public int[,] Create_Field(int m)
         {
             int[,] field = new int[m, m];
             for (int x = 0; x < 15; x++)
@@ -148,6 +157,8 @@ namespace Фоновая5._2
                             base[this.x, this.y] = -1;
                             base.x--;
                         }
+                        else
+                            throw new IndexOutOfRangeException();
                     }
                     catch (IndexOutOfRangeException)
                     {
@@ -162,6 +173,8 @@ namespace Фоновая5._2
                             base[this.x, y] = -1;
                             this.x++;
                         }
+                        else
+                            throw new IndexOutOfRangeException();
                     }
                     catch (IndexOutOfRangeException)
                     {
@@ -176,6 +189,8 @@ namespace Фоновая5._2
                             base[this.x, this.y] = -1;
                             this.y--;
                         }
+                        else
+                            throw new IndexOutOfRangeException();
                     }
                     catch (IndexOutOfRangeException)
                     {
@@ -190,6 +205,8 @@ namespace Фоновая5._2
                             base[this.x, this.y] = -1;
                             this.y++;
                         }
+                        else
+                            throw new IndexOutOfRangeException();
                     }
                     catch (IndexOutOfRangeException)
                     {
@@ -200,12 +217,11 @@ namespace Фоновая5._2
                     Environment.Exit(0);
                     break;
             }
-            base[this.x, this.y] = 3;
+            base[x, y] = 3;
         }
 
         public override void Draw()
         {
-            base.Draw();
             for (int i = 0; i < 15; i++)
             {
                 for (int j = 0; j < 15; j++)
@@ -214,52 +230,61 @@ namespace Фоновая5._2
                     else if (base[i, j] == 2) Console.Write("▦ "); //▦ - стена
                     else if (base[i, j] == 1) Console.Write("❦ "); // ❦ - вишенка
                     else if (base[i, j] == 0) Console.Write("◂ "); // ◂ - еда
-                    else if (base[i, j] == 5) Console.Write("👻 "); // 👻 - ghost
                     else Console.Write("⃞ "); // ⃞ - пустота
                 }
                 Console.WriteLine();
             }
         }
+        
     }
 
     class Ghost : Creature
     {
-        private int x1;
-        private int y1;
+        private int direction; // направление 0 - влево/назад (по умолчанию)
+        // 1 - вправо
+        // 2 - вверх
+        // 3 - вниз
+        private int last;
 
         public override int X
         {
-            set { this.x1 = 10; }
+            get
+            {
+                return x;
+            }
+            set { this.x = value; }
         }
 
         public override int Y
         {
-            set { this.y1 = 10; }
+            get { return y; }
+            set { this.y = value; }
         }
 
         public override void Move()
         {
-            base[x1, y1] = 0;
-            if (base[x1, y1 - 1] != 2) this.y1--;
-            else
-                if (base[x1 - 1, y1] != 2) this.x1--;
-            else
-                if (base[x1 + 1, y1] != 2) this.x1++;
-            else
-                y1++;
-            base[x1, y1] = 5;
-            if (base[x1, y1] == 3)
+            base[x, y] = last;
+            if (x - 1 < 0 || y - 1 < 0 || y + 1 > 14
+                || x + 1 > 14 || base[x, y] == 2) direction = (direction + 1) % 4;
+            Console.WriteLine(direction);
+
+            switch (direction)
             {
-                Console.WriteLine("Игра Окончена ;(");
-                Environment.Exit(0);
+                case 0: --y;
+                    break;
+                case 1: ++y;
+                    break;
+                case 2:  --x;
+                    break;
+                case 3: ++x;
+                    break;
             }
+            last = base[x, y];
+            base[x, y] = 5;
         }
 
         public override void Draw()
         {
-            base.Draw();
-            base[x1, y1] = 5;
-            Console.WriteLine("{0} {1} {2} {3}", base.x, base.y, x1, y1);
             for (int i = 0; i < 15; i++)
             {
                 for (int j = 0; j < 15; j++)
@@ -279,6 +304,16 @@ namespace Фоновая5._2
     class SmartGhost : Creature
     {
 
+        public override void Draw()
+        {
+            base[x, y] = 5;
+            base.Draw();
+        }
+
+        public override void Move()
+        {
+            
+        }
     }
 
     class Program
@@ -321,26 +356,48 @@ namespace Фоновая5._2
 
         static void Play(Packman packman)
         {
-            packman.Move();
-            packman.Draw();
+            while (true)
+            {
+                packman.Move();
+                packman.Draw();
+            }
         }
 
         static void Play(Packman packman, Ghost ghost)
         {
-
-            packman.Move();
-            ghost.Move();
-            packman.Draw();
-            for (int i = 0; i < 15; i++)
+            while(true)
             {
-                for (int j = 0; j < 15; j++)
+                packman.Move();
+                ghost.Move();
+                //Console.WriteLine("{0} {1} {2} {3}", ghost.X, ghost.Y, packman.X, packman.Y);
+                if (ghost.X == packman.X && ghost.Y == packman.Y)
                 {
-                    Console.Write("{0}-{1} ", packman[i, j], ghost[i, j]);
+                    Console.WriteLine("Игра Окончена ;(");
+                    Environment.Exit(0);
                 }
-                Console.WriteLine();
+                ghost.Draw();
             }
         }
-            static void Main(string[] args)
+
+        static void Play(Packman packman, Ghost ghost, SmartGhost smart)
+        {
+            while (true)
+            {
+                packman.Move();
+                ghost.Move();
+                smart.Move();
+                packman[ghost.X, ghost.Y] = 5;
+                if (ghost.X == packman.X && ghost.Y == packman.Y)
+                {
+                    Console.WriteLine("Игра Окончена ;(");
+                    Environment.Exit(0);
+                }
+                packman.Draw();
+                packman[ghost.X, ghost.Y] = 0;
+            }
+        }
+
+        static void Main(string[] args)
             {
                 Console.WriteLine(@"Добро пожаловать в игру Packman! Выбирете режим игры:
 1 - Игра без приведений
@@ -356,36 +413,35 @@ namespace Фоновая5._2
                     s = Console.ReadLine();
                 }
                 while (!int.TryParse(s, out answer) && answer != 1 && answer != 2 && answer != 3 && answer != 4 && answer != 5);
-
+                Creature c = new Creature();
                 Packman packman = new Packman();
+                packman.Field = c.Field;
                 Create(packman);
+            
                 packman.Draw();
                 switch (answer)
                 {
                     case 1:
-                        while (true)
-                        {
-                            Play(packman);
-                        }
-
+                        Play(packman);
+                        break;
                     case 2:
                         Ghost ghost = new Ghost();
+                        ghost.Field = c.Field;
                         ghost.X = ghost.Y = 10;
-                        while (true)
-                        {
-                            Play(packman, ghost);
-                        }
+                        Play(packman, ghost);
+                        break;
                     case 3:
                         SmartGhost smart = new SmartGhost();
-                        while (true)
-                        {
-                            //Play(packman, smart);
-                        }
-
+                        
+                    break;
                     case 4:
                         SmartGhost smart1 = new SmartGhost();
                         Ghost ghost1 = new Ghost();
-                        break;
+                        ghost1.X = ghost1.Y = 5;
+                        ghost1.Field = c.Field;
+                        smart1.Field = c.Field;
+                    Play(packman, ghost1, smart1);
+                    break;
                 }
 
 
