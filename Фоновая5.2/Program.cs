@@ -107,11 +107,9 @@ namespace Фоновая5._2
             {
                 for (int j = 0; j < 15; j++)
                 {
-                    if (field[i, j] == 3) Console.Write("ᗧ "); // ᗧ - packman
-                    else if (field[i, j] == 2) Console.Write("▦ "); //▦ - стена
+                    if (field[i, j] == 2) Console.Write("▦ "); //▦ - стена
                     else if (field[i, j] == 1) Console.Write("❦ "); // ❦ - вишенка
                     else if (field[i, j] == 0) Console.Write("◂ "); // ◂ - еда
-                    else if (field[i, j] == 5) Console.Write("👻 "); // 👻 - ghost
                     else Console.Write("⃞ "); // ⃞ - пустота
                 }
                 Console.WriteLine();
@@ -222,6 +220,7 @@ namespace Фоновая5._2
 
         public override void Draw()
         {
+            base[x, y] = 3;
             for (int i = 0; i < 15; i++)
             {
                 for (int j = 0; j < 15; j++)
@@ -235,7 +234,21 @@ namespace Фоновая5._2
                 Console.WriteLine();
             }
         }
-        
+
+        public override int X
+        {
+            get
+            {
+                return x;
+            }
+            set { this.x = value; }
+        }
+
+        public override int Y
+        {
+            get { return y; }
+            set { this.y = value; }
+        }
     }
 
     class Ghost : Creature
@@ -303,22 +316,119 @@ namespace Фоновая5._2
 
     class SmartGhost : Creature
     {
+        private int [] p = new int [3];
+        private int last;
+
+        public override int X
+        {
+            get
+            {
+                return x;
+            }
+            set { this.x = value; }
+        }
+
+        public override int Y
+        {
+            get { return y; }
+            set { this.y = value; }
+        }
 
         public override void Draw()
         {
-            base[x, y] = 5;
-            base.Draw();
+            for (int i = 0; i < 15; i++)
+            {
+                for (int j = 0; j < 15; j++)
+                {
+                    if (base[i, j] == 3) Console.Write("ᗧ "); // ᗧ - packman
+                    else if (base[i, j] == 2) Console.Write("▦ "); //▦ - стена
+                    else if (base[i, j] == 1) Console.Write("❦ "); // ❦ - вишенка
+                    else if (base[i, j] == 0) Console.Write("◂ "); // ◂ - еда
+                    else if (base[i, j] == 5) Console.Write("👻 "); // 👻 - ghost
+                    else if (base[i, j] == 4) Console.Write("☠ "); // ☠ - smart_ghost
+                    else Console.Write("⃞ "); // ⃞ - пустота
+                }
+                Console.WriteLine();
+            }
         }
 
         public override void Move()
         {
-            
+            base[x, y] = last;
+            for (int i = 0; i < 15; i++)
+            {
+                for (int j = 0; j < 15; j++)
+                {
+                    if (base[i, j] == 3)
+                    {
+                        p[0] = i;
+                        p[1] = j;
+                        p[2] = 4;
+                        break;
+                    }
+                }
+                if (p[2] == 4) break; 
+            }
+            Console.WriteLine("{0} {1} {2} {3}", x, y, p[0], p[1]);
+            if (p[0] > x && p[1] > y)
+            {
+                if (base[x + 1, y + 1] == 2)
+                {
+                    if (base[x, y + 1] != 2)
+                        ++y;
+                    else if (base[x + 1, y] != 2)
+                        ++x;
+                    else --x;
+                }
+                else
+                {
+                    ++x;
+                    ++y;
+                }
+            }
+            else if (p[0] < x && p[1] < y)
+            {
+                if (base[x - 1, y - 1] == 2)
+                {
+                    if (base[x, y - 1] != 2)
+                        --y;
+                    else if (base[x - 1, y] != 2)
+                        --x;
+                    else ++x;
+                }
+                else
+                {
+                    --x;
+                    --y;
+                }
+            }
+            else if (p[0] > x && p[1] == y && base[x + 1, y] != 2)
+            {
+                ++x;
+            }
+            else if (p[0] > y && p[1] == x && base[x, y + 1] != 2)
+            {
+                ++y;
+            }
+            else if (p[0] < x && p[1] == y && base[x - 1, y] != 2)
+            {
+                --x;
+            }
+            else if (p[0] < y && p[1] == x && base[x, y - 1] != 2)
+            {
+                --y;
+            }
+            else
+            {
+            }
+            last = base[x, y];
+            base[x, y] = 4;
         }
     }
 
     class Program
     {
-        static void Create(Creature creature)
+        static void Create(Packman creature)
         {
             Console.WriteLine("Вы хотите самостоятельно ввести координаты? Да(1)/ нет (2)");
             byte answer;
@@ -379,6 +489,22 @@ namespace Фоновая5._2
             }
         }
 
+        static void Play(Packman packman, SmartGhost ghost)
+        {
+            while (true)
+            {
+                packman.Move();
+                ghost.Move();
+                //Console.WriteLine("{0} {1} {2} {3}", ghost.X, ghost.Y, packman.X, packman.Y);
+                if (ghost.X == packman.X && ghost.Y == packman.Y)
+                {
+                    Console.WriteLine("Игра Окончена ;(");
+                    Environment.Exit(0);
+                }
+                ghost.Draw();
+            }
+        }
+
         static void Play(Packman packman, Ghost ghost, SmartGhost smart)
         {
             while (true)
@@ -386,14 +512,12 @@ namespace Фоновая5._2
                 packman.Move();
                 ghost.Move();
                 smart.Move();
-                packman[ghost.X, ghost.Y] = 5;
                 if (ghost.X == packman.X && ghost.Y == packman.Y)
                 {
                     Console.WriteLine("Игра Окончена ;(");
                     Environment.Exit(0);
                 }
-                packman.Draw();
-                packman[ghost.X, ghost.Y] = 0;
+                smart.Draw();
             }
         }
 
@@ -417,7 +541,7 @@ namespace Фоновая5._2
                 Packman packman = new Packman();
                 packman.Field = c.Field;
                 Create(packman);
-            
+
                 packman.Draw();
                 switch (answer)
                 {
@@ -432,12 +556,15 @@ namespace Фоновая5._2
                         break;
                     case 3:
                         SmartGhost smart = new SmartGhost();
-                        
+                        smart.X = smart.Y = 3;
+                        smart.Field = c.Field;
+                        Play(packman, smart);
                     break;
                     case 4:
                         SmartGhost smart1 = new SmartGhost();
                         Ghost ghost1 = new Ghost();
                         ghost1.X = ghost1.Y = 5;
+                        smart1.X = smart1.Y = 3;
                         ghost1.Field = c.Field;
                         smart1.Field = c.Field;
                     Play(packman, ghost1, smart1);
