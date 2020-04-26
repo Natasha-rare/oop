@@ -440,7 +440,7 @@ namespace Фоновая5._2
 
     class Program
     {
-        static void Create(Packman creature)
+        static void Create(Creature creature)
         {
             Console.WriteLine("Вы хотите самостоятельно ввести координаты пакмена? Да(1)/ нет (2)");
             byte answer;
@@ -475,7 +475,7 @@ namespace Фоновая5._2
             }
         }
 
-        static void Play(Packman packman)
+        static void Play(Creature packman)
         {
             while (true)
             {
@@ -484,7 +484,7 @@ namespace Фоновая5._2
             }
         }
 
-        static void Play(Packman packman, Ghost ghost)
+        static void Play(Creature packman, Creature ghost)
         {
             while(true)
             {
@@ -495,7 +495,7 @@ namespace Фоновая5._2
                 {
                     ghost.Draw();
                     Console.WriteLine(@"х---------------------------х
-        GAME OVER (>﹏<)
+       GAME OVER (>﹏<)
 х---------------------------х");
                     Environment.Exit(0);
                 }
@@ -503,26 +503,8 @@ namespace Фоновая5._2
             }
         }
 
-        static void Play(Packman packman, SmartGhost ghost)
-        {
-            while (true)
-            {
-                packman.Move();
-                ghost.Move();
 
-                if (ghost.X == packman.X && ghost.Y == packman.Y)
-                {
-                    ghost.Draw();
-                    Console.WriteLine(@"х---------------------------х
-        GAME OVER (>﹏<)
-х---------------------------х");
-                    Environment.Exit(0);
-                }
-                ghost.Draw();
-            }
-        }
-
-        static void Play(Packman packman, Ghost ghost, SmartGhost smart)
+        static void Play(Creature packman, Creature ghost, Creature smart)
         {
             while (true)
             {
@@ -533,7 +515,7 @@ namespace Фоновая5._2
                 {
                     smart.Draw();
                     Console.WriteLine(@"х---------------------------х
-        GAME OVER (>﹏<)
+       GAME OVER (>﹏<)
 х---------------------------х");
                     Environment.Exit(0);
                 }
@@ -558,37 +540,38 @@ namespace Фоновая5._2
                 }
                 while (!int.TryParse(s, out answer) && answer != 1 && answer != 2 && answer != 3 && answer != 4 && answer != 5);
             if (answer == 5) Environment.Exit(0);
-                Creature c = new Creature();
-                Packman packman = new Packman();
-                packman.Field = c.Field;
+                
+                Creature ghost, smart, packman;
+                packman = new Packman();
                 Create(packman);
 
                 packman.Draw();
+
                 switch (answer)
                 {
                     case 1:
                         Play(packman);
                         break;
                     case 2:
-                        Ghost ghost = new Ghost();
-                        ghost.Field = c.Field;
+                        ghost = new Ghost();
+                        ghost.Field = packman.Field;
                         ghost.X = ghost.Y = 10;
                         Play(packman, ghost);
                         break;
                     case 3:
-                        SmartGhost smart = new SmartGhost();
+                        smart = new SmartGhost();
                         smart.X = smart.Y = 3;
-                        smart.Field = c.Field;
+                        smart.Field = packman.Field;
                         Play(packman, smart);
                     break;
                     case 4:
-                        SmartGhost smart1 = new SmartGhost();
-                        Ghost ghost1 = new Ghost();
-                        ghost1.X = ghost1.Y = 5;
-                        smart1.X = smart1.Y = 3;
-                        ghost1.Field = c.Field;
-                        smart1.Field = c.Field;
-                    Play(packman, ghost1, smart1);
+                        smart = new SmartGhost();
+                        ghost = new Ghost();
+                        ghost.X = ghost.Y = 5;
+                        smart.X = smart.Y = 3;
+                        ghost.Field = packman.Field;
+                        smart.Field = packman.Field;
+                        Play(packman, ghost, smart);
                     break;
                 }
 
