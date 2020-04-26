@@ -2,6 +2,7 @@
 
 namespace Фоновая5._2
 {
+    
     class Creature
     {
         protected int x;
@@ -235,20 +236,6 @@ namespace Фоновая5._2
             }
         }
 
-        public override int X
-        {
-            get
-            {
-                return x;
-            }
-            set { this.x = value; }
-        }
-
-        public override int Y
-        {
-            get { return y; }
-            set { this.y = value; }
-        }
     }
 
     class Ghost : Creature
@@ -258,6 +245,7 @@ namespace Фоновая5._2
         // 2 - вверх
         // 3 - вниз
         private int last;
+        static Random rnd = new Random();
 
         public override int X
         {
@@ -278,8 +266,10 @@ namespace Фоновая5._2
         {
             base[x, y] = last;
             if (x - 1 < 0 || y - 1 < 0 || y + 1 > 14
-                || x + 1 > 14 || base[x, y] == 2) direction = (direction + 1) % 4;
-            Console.WriteLine(direction);
+                || x + 1 > 14 || (direction == 0 && base[x, y - 1] == 2) ||
+                (direction == 1 && base[x, y + 1] == 2) || (direction == 2 && base[x - 1, y] == 2)
+                || (direction == 3 && base[x + 1, y] == 2))
+                    direction = rnd.Next(4);
 
             switch (direction)
             {
@@ -369,8 +359,40 @@ namespace Фоновая5._2
                 }
                 if (p[2] == 4) break; 
             }
-            Console.WriteLine("{0} {1} {2} {3}", x, y, p[0], p[1]);
-            if (p[0] > x && p[1] > y)
+            //Console.WriteLine("{0} {1} {2} {3}", x, y, p[0], p[1]);
+            if (p[0] < x && p[1] > y)
+            {
+                if (base[x - 1, y + 1] == 2)
+                {
+                    if (base[x, y + 1] != 2)
+                        ++y;
+                    else if (base[x - 1, y] != 2)
+                        --x;
+
+                }
+                else
+                {
+                    --x;
+                    ++y;
+                }
+            }
+            else if (p[0] > x && p[1] < y)
+            {
+                if (base[x + 1, y - 1] == 2)
+                {
+                    if (base[x, y - 1] != 2)
+                        --y;
+                    else if (base[x + 1, y] != 2)
+                        ++x;
+
+                }
+                else
+                {
+                    ++x;
+                    --y;
+                }
+            }
+            else if (p[0] > x && p[1] > y)
             {
                 if (base[x + 1, y + 1] == 2)
                 {
@@ -378,7 +400,6 @@ namespace Фоновая5._2
                         ++y;
                     else if (base[x + 1, y] != 2)
                         ++x;
-                    else --x;
                 }
                 else
                 {
@@ -394,7 +415,7 @@ namespace Фоновая5._2
                         --y;
                     else if (base[x - 1, y] != 2)
                         --x;
-                    else ++x;
+
                 }
                 else
                 {
@@ -402,24 +423,15 @@ namespace Фоновая5._2
                     --y;
                 }
             }
-            else if (p[0] > x && p[1] == y && base[x + 1, y] != 2)
+            else if (p[0] == x)
             {
-                ++x;
+                if (p[1] < y) --y;
+                else ++y;
             }
-            else if (p[0] > y && p[1] == x && base[x, y + 1] != 2)
+            else if (p[1] == y)
             {
-                ++y;
-            }
-            else if (p[0] < x && p[1] == y && base[x - 1, y] != 2)
-            {
-                --x;
-            }
-            else if (p[0] < y && p[1] == x && base[x, y - 1] != 2)
-            {
-                --y;
-            }
-            else
-            {
+                if (p[0] < x) --x;
+                else ++x;
             }
             last = base[x, y];
             base[x, y] = 4;
@@ -430,7 +442,7 @@ namespace Фоновая5._2
     {
         static void Create(Packman creature)
         {
-            Console.WriteLine("Вы хотите самостоятельно ввести координаты? Да(1)/ нет (2)");
+            Console.WriteLine("Вы хотите самостоятельно ввести координаты пакмена? Да(1)/ нет (2)");
             byte answer;
 
             do
@@ -451,7 +463,6 @@ namespace Фоновая5._2
                     Console.Write("x=");
                     s = Console.ReadLine();
                 } while (!int.TryParse(s, out x));
-
                 Console.WriteLine("Введите y");
 
                 do
@@ -482,7 +493,10 @@ namespace Фоновая5._2
                 //Console.WriteLine("{0} {1} {2} {3}", ghost.X, ghost.Y, packman.X, packman.Y);
                 if (ghost.X == packman.X && ghost.Y == packman.Y)
                 {
-                    Console.WriteLine("Игра Окончена ;(");
+                    ghost.Draw();
+                    Console.WriteLine(@"х---------------------------х
+        GAME OVER (>﹏<)
+х---------------------------х");
                     Environment.Exit(0);
                 }
                 ghost.Draw();
@@ -495,10 +509,13 @@ namespace Фоновая5._2
             {
                 packman.Move();
                 ghost.Move();
-                //Console.WriteLine("{0} {1} {2} {3}", ghost.X, ghost.Y, packman.X, packman.Y);
+
                 if (ghost.X == packman.X && ghost.Y == packman.Y)
                 {
-                    Console.WriteLine("Игра Окончена ;(");
+                    ghost.Draw();
+                    Console.WriteLine(@"х---------------------------х
+        GAME OVER (>﹏<)
+х---------------------------х");
                     Environment.Exit(0);
                 }
                 ghost.Draw();
@@ -512,9 +529,12 @@ namespace Фоновая5._2
                 packman.Move();
                 ghost.Move();
                 smart.Move();
-                if (ghost.X == packman.X && ghost.Y == packman.Y)
+                if ((ghost.X == packman.X && ghost.Y == packman.Y) || (smart.X == packman.X && smart.Y == packman.Y))
                 {
-                    Console.WriteLine("Игра Окончена ;(");
+                    smart.Draw();
+                    Console.WriteLine(@"х---------------------------х
+        GAME OVER (>﹏<)
+х---------------------------х");
                     Environment.Exit(0);
                 }
                 smart.Draw();
@@ -537,6 +557,7 @@ namespace Фоновая5._2
                     s = Console.ReadLine();
                 }
                 while (!int.TryParse(s, out answer) && answer != 1 && answer != 2 && answer != 3 && answer != 4 && answer != 5);
+            if (answer == 5) Environment.Exit(0);
                 Creature c = new Creature();
                 Packman packman = new Packman();
                 packman.Field = c.Field;
