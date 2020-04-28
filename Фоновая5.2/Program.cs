@@ -137,6 +137,51 @@ namespace Фоновая5._2
 
     class Packman : Creature
     {
+
+        public override int X
+        {
+            get { return this.x; }
+            set
+            {
+                try
+                {
+                    if (value > 14)
+                    {
+                        throw new IndexOutOfRangeException("Координата не может быть больше 14. X задается 0");
+                    }
+                    this.x = value;
+                }
+                catch (Exception er)
+                {
+                    Console.WriteLine("Ошибка: " + er.Message);
+                    this.x = 0;
+                }
+            }
+
+        }
+        public override int Y
+        {
+            get { return this.y; }
+            set
+            {
+                try
+                {
+                    if (value > 14)
+                    {
+                        throw new IndexOutOfRangeException("Координата не может быть больше 14. Y задается 0");
+                    }
+                    this.y = value;
+                    base[x, y] = 3;
+                }
+                catch (Exception er)
+                {
+                    Console.WriteLine("Ошибка: " + er.Message);
+                    this.y = 0;
+                }
+                base[x, y] = 3;
+            }
+        }
+
         public override void Move()
         {
             Console.WriteLine(@"Введите направление:
@@ -432,6 +477,11 @@ namespace Фоновая5._2
             {
                 if (p[0] < x) --x;
                 else ++x;
+            }
+            else
+            {
+                --x;
+                --y;
             }
             last = base[x, y];
             base[x, y] = 4;
