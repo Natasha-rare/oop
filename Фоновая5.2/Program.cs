@@ -151,7 +151,7 @@ namespace Фоновая5._2
                 case "W":
                     try
                     {
-                        if (base[this.x - 1, this.y] != 2)
+                        if (base[this.x - 1, this.y] != 2 && this.x - 1 >= 0)
                         {
                             base[this.x, this.y] = -1;
                             base.x--;
@@ -167,7 +167,7 @@ namespace Фоновая5._2
                 case "X":
                     try
                     {
-                        if (base[this.x + 1, y] != 2)
+                        if (base[this.x + 1, y] != 2 && this.x + 1 <= 14)
                         {
                             base[this.x, y] = -1;
                             this.x++;
@@ -183,7 +183,7 @@ namespace Фоновая5._2
                 case "A":
                     try
                     {
-                        if (base[this.x, this.y - 1] != 2)
+                        if (base[this.x, this.y - 1] != 2 && this.y - 1 >= 0)
                         {
                             base[this.x, this.y] = -1;
                             this.y--;
@@ -199,7 +199,7 @@ namespace Фоновая5._2
                 case "D":
                     try
                     {
-                        if (base[this.x, this.y + 1] != 2)
+                        if (base[this.x, this.y + 1] != 2 && this.y + 1 <= 14)
                         {
                             base[this.x, this.y] = -1;
                             this.y++;
@@ -265,11 +265,10 @@ namespace Фоновая5._2
         public override void Move()
         {
             base[x, y] = last;
-            if (x - 1 < 0 || y - 1 < 0 || y + 1 > 14
-                || x + 1 > 14 || (direction == 0 && base[x, y - 1] == 2) ||
-                (direction == 1 && base[x, y + 1] == 2) || (direction == 2 && base[x - 1, y] == 2)
-                || (direction == 3 && base[x + 1, y] == 2))
-                    direction = rnd.Next(4);
+            if ((direction == 0 && (base[x, y - 1] == 2 || y - 1 < 0)) ||
+                (direction == 1 && (base[x, y + 1] == 2 || y + 1 > 14)) || (direction == 2 && (base[x - 1, y] == 2 || x - 1 < 0))
+                || (direction == 3 && (base[x + 1, y] == 2 || x + 1 > 14)))
+                    direction = (direction + 1) % 4;
 
             switch (direction)
             {
@@ -282,6 +281,7 @@ namespace Фоновая5._2
                 case 3: ++x;
                     break;
             }
+
             last = base[x, y];
             base[x, y] = 5;
         }
@@ -560,15 +560,15 @@ namespace Фоновая5._2
                         break;
                     case 3:
                         smart = new SmartGhost();
-                        smart.X = smart.Y = 3;
+                        smart.X = smart.Y = 5;
                         smart.Field = packman.Field;
                         Play(packman, smart);
                     break;
                     case 4:
                         smart = new SmartGhost();
                         ghost = new Ghost();
-                        ghost.X = ghost.Y = 5;
-                        smart.X = smart.Y = 3;
+                        ghost.X = ghost.Y = 7;
+                        smart.X = smart.Y = 5;
                         ghost.Field = packman.Field;
                         smart.Field = packman.Field;
                         Play(packman, ghost, smart);
