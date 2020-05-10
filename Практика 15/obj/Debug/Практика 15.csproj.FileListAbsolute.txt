@@ -1,0 +1,10 @@
+C:\Users\nattt\coding\Практика 15\bin\Debug\Практика 15.exe.config
+C:\Users\nattt\coding\Практика 15\bin\Debug\Практика 15.exe
+C:\Users\nattt\coding\Практика 15\bin\Debug\Практика 15.pdb
+C:\Users\nattt\coding\Практика 15\obj\Debug\Практика 15.csprojAssemblyReference.cache
+C:\Users\nattt\coding\Практика 15\obj\Debug\Практика_15.Form1.resources
+C:\Users\nattt\coding\Практика 15\obj\Debug\Практика_15.Properties.Resources.resources
+C:\Users\nattt\coding\Практика 15\obj\Debug\Практика 15.csproj.GenerateResource.cache
+C:\Users\nattt\coding\Практика 15\obj\Debug\Практика 15.csproj.CoreCompileInputs.cache
+C:\Users\nattt\coding\Практика 15\obj\Debug\Практика 15.exe
+C:\Users\nattt\coding\Практика 15\obj\Debug\Практика 15.pdb
