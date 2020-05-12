@@ -14,8 +14,7 @@ namespace Практика_4
     public partial class Form1 : Form
     {
         public Random rnd = new Random();
-        public int number, count;
-        public double index;
+        public int number, count, index;
         
         public Form1()
         {
@@ -34,7 +33,7 @@ namespace Практика_4
         private void button2_Click(object sender, EventArgs e)
         {
             label3.Text = String.Format("Загаданное число: {0}", number);
-            label2.Text = String.Format("Ваш коэффицент невезучести равен: {0:f1}", count / index);
+            label2.Text = String.Format("Ваш коэффицент невезучести равен: {0:f1}", (index - count) / 10.0);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -58,7 +57,7 @@ namespace Практика_4
                 index += 1;
                 if (index % 10 == 0)
                 {
-                    label3.Text = String.Format("Ваш коэффицент невезучести равен: {0:f1}", count / index);
+                    label3.Text = String.Format("Ваш коэффицент невезучести равен: {0:f1}", (index - count) / 10.0);
                 }
             }
             catch (FormatException)
@@ -70,7 +69,7 @@ namespace Практика_4
                 label2.Text = err.Message;
             }
             textBox1.Text = "";
-            label2.Location = new Point((int)(35 + 10 * index), 398);
+            label2.Location = new Point(35 + 10 * index, 398);
         }
     }
 }
