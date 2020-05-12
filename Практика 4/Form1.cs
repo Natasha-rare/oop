@@ -40,22 +40,37 @@ namespace Практика_4
         private void button1_Click(object sender, EventArgs e)
         {
             label3.Text = "";
-            if (int.Parse(textBox1.Text) == number)
+            try
             {
-                label2.Text = "Вы угадали ^.^";
-                count += 1;
-                number = rnd.Next(1, 11);
+                if (int.Parse(textBox1.Text) < 0 || int.Parse(textBox1.Text) > 10)
+                    throw new Exception("Число не входит в заданный диапазон");
+
+                if (int.Parse(textBox1.Text) == number)
+                {
+                    label2.Text = "Вы угадали ^.^";
+                    count += 1;
+                    number = rnd.Next(1, 11);
+                }
+                else
+                {
+                    label2.Text = "Вы не угадали ;( Попробуйте еще!";
+                }
+                index += 1;
+                if (index % 10 == 0)
+                {
+                    label3.Text = String.Format("Ваш коэффицент невезучести равен: {0:f1}", count / index);
+                }
             }
-            else
+            catch (FormatException)
             {
-                label2.Text = "Вы не угадали ;( Попробуйте еще!";
+                label2.Text = "Вводиться только число";
             }
-            index += 1;
-            if (index % 10 == 0)
+            catch(Exception err)
             {
-                label3.Text = String.Format("Ваш коэффицент невезучести равен: {0:f1}", count / index);
+                label2.Text = err.Message;
             }
             textBox1.Text = "";
+            label2.Location = new Point((int)(35 + 10 * index), 398);
         }
     }
 }
