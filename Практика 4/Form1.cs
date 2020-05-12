@@ -55,6 +55,7 @@ namespace Практика_4
             {
                 label3.Text = String.Format("Ваш коэффицент невезучести равен: {0:f1}", count / index);
             }
+            textBox1.Text = "";
         }
     }
 }

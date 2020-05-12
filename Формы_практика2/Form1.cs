@@ -20,6 +20,7 @@ namespace Формы_практика2
         private void button1_Click(object sender, EventArgs e)
         {
             label3.Text += Convert.ToString(1.61 * double.Parse(textBox1.Text)) + " км";
+            textBox1.Text = "";
         }
     }
 }
