@@ -13,15 +13,17 @@ namespace Практика_4
 {
     public partial class Form1 : Form
     {
-        public Random rnd = new Random();
-        public int number, count, index;
-        
+        Random rnd = new Random();
+        int number, count, index;
+
+
         public Form1()
         {
             InitializeComponent();
             label1.Text = "Введите число от 1 до 10 ";
             number = rnd.Next(1, 11);
         }
+    
 
 
 
