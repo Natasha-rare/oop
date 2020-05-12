@@ -19,7 +19,7 @@ namespace Формы_практика2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            label3.Text += Convert.ToString(1.61 * double.Parse(textBox1.Text)) + " км";
+            label3.Text = "Указанное число миль равно " + Convert.ToString(Math.Round(1.61 * double.Parse(textBox1.Text), 2)) + " км";
             textBox1.Text = "";
         }
     }
