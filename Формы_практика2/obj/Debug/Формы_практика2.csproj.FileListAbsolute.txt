@@ -1,0 +1,10 @@
+C:\Users\nattt\coding\Формы\Формы_практика2\bin\Debug\Формы_практика2.exe.config
+C:\Users\nattt\coding\Формы\Формы_практика2\bin\Debug\Формы_практика2.exe
+C:\Users\nattt\coding\Формы\Формы_практика2\bin\Debug\Формы_практика2.pdb
+C:\Users\nattt\coding\Формы\Формы_практика2\obj\Debug\Формы_практика2.csprojAssemblyReference.cache
+C:\Users\nattt\coding\Формы\Формы_практика2\obj\Debug\Формы_практика2.Form1.resources
+C:\Users\nattt\coding\Формы\Формы_практика2\obj\Debug\Формы_практика2.Properties.Resources.resources
+C:\Users\nattt\coding\Формы\Формы_практика2\obj\Debug\Формы_практика2.csproj.GenerateResource.cache
+C:\Users\nattt\coding\Формы\Формы_практика2\obj\Debug\Формы_практика2.csproj.CoreCompileInputs.cache
+C:\Users\nattt\coding\Формы\Формы_практика2\obj\Debug\Формы_практика2.exe
+C:\Users\nattt\coding\Формы\Формы_практика2\obj\Debug\Формы_практика2.pdb
